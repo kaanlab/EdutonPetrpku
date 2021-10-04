@@ -1,0 +1,48 @@
+﻿<MudDialog>
+    <DialogContent>
+        <EditForm EditContext="@editContext">
+            <DataAnnotationsValidator />
+
+            <MudTextField Label="Народ" Class="mt-3" Lines="2"
+                          @bind-Value="Context.Name" For="@(() => Context.Name)" />
+            <MudTextField Label="Субъект" Class="mt-3"
+                          @bind-Value="Context.Subject" For="@(() => Context.Subject)" />
+            <MudTextField Label="Численность" Class="mt-3"
+                          @bind-Value="Context.Population" For="@(() => Context.Population)" />
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Отменить</MudButton>
+        <MudButton ButtonType="ButtonType.Submit" Color="Color.Info" OnClick="AddOrUpdate" Disabled="@formInvalid">Сохранить</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Nationality Context { get; set; } = new Nationality();
+
+    private bool formInvalid = true;
+    private EditContext editContext;
+
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(Context);
+        editContext.OnFieldChanged += HandleFieldChanged;
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        formInvalid = !editContext.Validate();
+        StateHasChanged();
+    }
+
+
+    void AddOrUpdate() => MudDialog.Close(DialogResult.Ok(Context));
+
+    void Cancel() => MudDialog.Cancel();
+}

@@ -1,0 +1,25 @@
+﻿@page "/"
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+<EditForm Model="@editorOptions">
+    <CKEditor Id="MyEditor1"
+                   @bind-Value=@editorOptions.InitialText
+                   UrlToPostImage="http://localhost:44301/api/qaiser/Upload">
+    </CKEditor>
+</EditForm>
+
+@code {
+    CKEditorModel editorOptions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editorOptions = new CKEditorModel();
+        editorOptions.InitialText = "Welcome to Qaiser Mehmood github editor5-blazor app";
+        var txt = await Task.Run(() => 1);
+    }
+}

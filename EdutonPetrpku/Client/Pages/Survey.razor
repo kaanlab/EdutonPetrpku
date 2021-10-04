@@ -1,0 +1,86 @@
+﻿@page "/survey"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
+@inject HttpClient httpClient
+
+@attribute [Authorize(Roles = GlobalVarables.Roles.USER)]
+
+
+@if (allNationalities is null)
+{
+    <span>
+        Loading...
+    </span>
+}
+else if (checkedNationaliti is not null)
+{
+    <p> @checkedNationaliti.Name</p>
+    <p> @checkedNationaliti.Population</p>
+
+}
+else
+{
+    <EditForm Model="@model" OnInvalidSubmit="OnValidSubmit">
+        <MudItem xs="12" sm="6" md="4">
+            <MudSelect Label="Select fast-food" @bind-Value="UserChoice" HelperText="String" Placeholder="Please Select"
+                       OffsetY="true" AdornmentIcon="@Icons.Material.Filled.Fastfood" AdornmentColor="Color.Primary">
+                @foreach (Nationality nationality in freeNationalities)
+                    {
+                    <MudSelectItem Value="@nationality.Id">@nationality.Name</MudSelectItem>
+                    }
+            </MudSelect>
+        </MudItem>
+        <div class="col-12 mb-2">
+            <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Primary" OnClick="AcceptSuvery">Primary</MudButton>
+        </div>
+    </EditForm>
+}
+
+@code {
+
+    private string authUserId;
+    private string authUserRole;
+    private List<Nationality> allNationalities;
+    private List<Nationality> freeNationalities;
+    private Nationality? checkedNationaliti;
+    private SurveyModel model = new SurveyModel();
+    private bool success;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private int UserChoice { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authUser = (await authenticationState).User;
+        authUserId = authUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid).Value;
+
+        allNationalities = await httpClient.GetFromJsonAsync<List<Nationality>>("api/nationality/all");
+        checkedNationaliti = allNationalities.FirstOrDefault(u => u.AppUserId == authUserId);
+        freeNationalities = allNationalities.Where(u => u.AppUser == null).ToList();
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        success = true;
+        StateHasChanged();
+    }
+
+    private async Task AcceptSuvery()
+    {
+        model.AppUserId = authUserId;
+        model.NationalityId = UserChoice;
+
+        var response = await httpClient.PostAsJsonAsync<SurveyModel>("/api/survey/savechoice", model);
+        if (response.IsSuccessStatusCode)
+        {
+            checkedNationaliti = await response.Content.ReadFromJsonAsync<Nationality>();
+        }
+        StateHasChanged();
+    }
+}
+

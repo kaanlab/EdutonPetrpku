@@ -1,0 +1,22 @@
+<MudDialog>
+    <DialogContent>
+        <MudText>@Context.Image</MudText>
+        <MudText>@Context.DisplayName</MudText>
+        <MudText>@Context.UserName</MudText>
+        <MudText>@Context.Email</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Отменить</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="Delete">Удалить</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code { 
+    
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public AppUser Context { get; set; }
+
+    void Delete() => MudDialog.Close(DialogResult.Ok(Context));
+    void Cancel() => MudDialog.Cancel(); 
+}

@@ -1,0 +1,50 @@
+<MudDialog>
+    <DialogContent>
+        <EditForm EditContext="@editContext">
+            <DataAnnotationsValidator />
+
+            <MudField Label="Название училища" Class="mt-3">@Context.DisplayName</MudField>
+            <MudField Label="Логин" Class="mt-3">@Context.UserName</MudField>
+            <MudTextField Label="Действующий пароль" Class="mt-3" InputType="InputType.Password"
+                          @bind-Value="Context.CurrentPassword" For="@(() => Context.CurrentPassword)" />
+            <MudTextField Label="новый пароль" Class="mt-3" InputType="InputType.Password"
+                          @bind-Value="Context.Password" For="@(() => Context.Password)" />
+            <MudTextField Label="Повторить ввод нового пароля" Class="mt-3" InputType="InputType.Password"
+                          @bind-Value="Context.ConfirmPassword" For="@(() => Context.ConfirmPassword)" />
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Отменить</MudButton>
+        <MudButton ButtonType="ButtonType.Submit" Color="Color.Info" OnClick="AddOrUpdate" Disabled="@formInvalid">Сохранить</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public AppUserChPassModel Context { get; set; } = new AppUserChPassModel();
+
+    private bool formInvalid = true;
+    private EditContext editContext;
+
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(Context);
+        editContext.OnFieldChanged += HandleFieldChanged;
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        formInvalid = !editContext.Validate();
+        StateHasChanged();
+    }
+
+
+    void AddOrUpdate() => MudDialog.Close(DialogResult.Ok(Context));
+
+    void Cancel() => MudDialog.Cancel();
+}

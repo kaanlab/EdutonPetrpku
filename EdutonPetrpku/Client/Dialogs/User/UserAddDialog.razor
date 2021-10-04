@@ -1,0 +1,54 @@
+<MudDialog>
+    <DialogContent>
+        <EditForm EditContext="@editContext">
+            <DataAnnotationsValidator />
+
+            <MudTextField Label="Логотип" Class="mt-3" Lines="2"
+                          @bind-Value="Context.Image" For="@(() => Context.Image)" />
+            <MudTextField Label="Название училища" Class="mt-3"
+                          @bind-Value="Context.DisplayName" For="@(() => Context.DisplayName)" />
+            <MudTextField Label="Логин" Class="mt-3"
+                          @bind-Value="Context.UserName" For="@(() => Context.UserName)" />
+            <MudTextField Label="Почта" Class="mt-3"
+                          @bind-Value="Context.Email" For="@(() => Context.Email)" />
+            <MudTextField Label="Пароль" Class="mt-3" InputType="InputType.Password"
+                          @bind-Value="Context.Password" For="@(() => Context.Password)" />
+            <MudTextField Label="Повторить пароль" Class="mt-3" InputType="InputType.Password"
+                          @bind-Value="Context.ConfirmPassword" For="@(() => Context.ConfirmPassword)" />
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Отменить</MudButton>
+        <MudButton ButtonType="ButtonType.Submit" Color="Color.Info" OnClick="Add" Disabled="@formInvalid">Сохранить</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public AppUserModel Context { get; set; } = new AppUserModel();
+
+    private bool formInvalid = true;
+    private EditContext editContext;
+
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(Context);
+        editContext.OnFieldChanged += HandleFieldChanged;
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        formInvalid = !editContext.Validate();
+        StateHasChanged();
+    }
+
+
+    void Add() => MudDialog.Close(DialogResult.Ok(Context));
+
+    void Cancel() => MudDialog.Cancel();
+}

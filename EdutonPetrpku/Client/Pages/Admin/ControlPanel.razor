@@ -1,0 +1,7 @@
+﻿@page "/admin"
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+
+<UserTable />
+<NationalityTable />

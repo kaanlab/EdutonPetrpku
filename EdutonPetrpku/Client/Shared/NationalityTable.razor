@@ -1,0 +1,107 @@
+﻿@inject HttpClient httpClient
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudTable Items="@nationalities" Hover="true" Class="my-5">
+    <ToolBarContent>
+        <MudIconButton Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Size="Size.Large" @onclick="AddNationality" Class="mr-3" />
+        <MudText Typo="Typo.h6">Коренные малочисленые народы</MudText>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Народ</MudTh>
+        <MudTh>Субъект</MudTh>
+        <MudTh>Численность</MudTh>
+        <MudTh>Название ДОО</MudTh>
+        <MudTh></MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Народ">@context.Name</MudTd>
+        <MudTd DataLabel="Субъект">@context.Subject</MudTd>
+        <MudTd DataLabel="Численность">@context.Population</MudTd>
+        <MudTd DataLabel="Название ДОО">@context.AppUser?.DisplayName</MudTd>
+        <MudTd><MudButton Color="Color.Info" @onclick="@((e) => UpdateNationality(context))">Изменить</MudButton></MudTd>
+        <MudTd><MudButton Color="Color.Error" @onclick="@((e) => DeleteNationality(context))">Удалить</MudButton></MudTd>
+    </RowTemplate>
+</MudTable>
+
+
+@code {
+    private List<Nationality> nationalities = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        nationalities = await httpClient.GetFromJsonAsync<List<Nationality>>("/api/nationality/all");
+    }
+
+    private async Task AddNationality()
+    {
+
+        var dialog = DialogService.Show<NationalityAddOrUpdateDialog>("Добавление коренного народа");
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var response = await httpClient.PostAsJsonAsync<Nationality>("/api/nationality/add", result.Data as Nationality);
+            if (response.IsSuccessStatusCode)
+            {
+                var addedUser = await response.Content.ReadFromJsonAsync<Nationality>();
+                nationalities.Add(addedUser);
+                Snackbar.Add("Коренной народ успешно добавлен!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Не могу добавить коренной народ!", Severity.Error);
+            }
+        }
+    }
+
+
+    private async Task UpdateNationality(Nationality context)
+    {
+        var parameters = new DialogParameters { ["context"] = context };
+
+        var dialog = DialogService.Show<NationalityAddOrUpdateDialog>("Обновить данные о коренном народе", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var response = await httpClient.PutAsJsonAsync<Nationality>("/api/nationality/update", result.Data as Nationality);
+            if (response.IsSuccessStatusCode)
+            {
+                var updatedNationality = await response.Content.ReadFromJsonAsync<Nationality>();
+                var index = nationalities.IndexOf(context);
+                nationalities.Remove(context);
+                nationalities.Insert(index, updatedNationality);
+                Snackbar.Add("Информация о коренном народе успешно обновлена!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Не могу обновить информацию о коренном народе!", Severity.Error);
+            }
+        }
+    }
+
+
+    private async Task DeleteNationality(Nationality context)
+    {
+        var parameters = new DialogParameters { ["context"] = context };
+
+        var dialog = DialogService.Show<NationalityDeleteDialog>("Удалить коренной народ", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var nationalityToDelete = result.Data as Nationality;
+            var response = await httpClient.DeleteAsync($"/api/nationality/delete/{nationalityToDelete.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                nationalities.Remove(nationalityToDelete);
+                Snackbar.Add("Информация о коренном народе успешно удалена!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Не могу удалить информацию о коренном народе!", Severity.Error);
+            }
+
+        }
+    }
+
+}
