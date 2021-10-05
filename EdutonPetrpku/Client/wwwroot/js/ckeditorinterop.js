@@ -1,6 +1,6 @@
 ﻿window.CKEditorInterop = (() => {
     const editors = {};
-    let uploadToUrl = 'http://localhost:44301/api/q/Upload';
+    let uploadToUrl = '';
 
     class MyUploadAdapter {
         constructor(loader) {
@@ -85,7 +85,7 @@
             // Prepare the form data.
             const data = new FormData();
 
-            data.append('upload', file);
+            data.append('img', file);
 
             // Important note: This is the right place to implement security mechanisms
             // like authentication and CSRF protection. For instance, you can use
