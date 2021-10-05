@@ -44,8 +44,8 @@
             var response = await httpClient.PostAsJsonAsync<Nationality>("/api/nationality/add", result.Data as Nationality);
             if (response.IsSuccessStatusCode)
             {
-                var addedUser = await response.Content.ReadFromJsonAsync<Nationality>();
-                nationalities.Add(addedUser);
+                var addedNationality = await response.Content.ReadFromJsonAsync<Nationality>();
+                nationalities.Add(addedNationality);
                 Snackbar.Add("Коренной народ успешно добавлен!", Severity.Success);
             }
             else

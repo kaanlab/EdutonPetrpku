@@ -1,0 +1,107 @@
+﻿@inject HttpClient httpClient
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudTable Items="@sitePages" Hover="true" Class="my-5">
+    <ToolBarContent>
+        <MudIconButton Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Size="Size.Large" @onclick="AddSitePage" Class="mr-3" />
+        <MudText Typo="Typo.h6">Страницы сайта</MudText>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Адрес страницы (url)</MudTh>
+        <MudTh>
+            <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<SitePage, object>(x=>x.Order)">Порядок</MudTableSortLabel>
+        </MudTh>
+        <MudTh>Название страницы</MudTh>        
+        <MudTh></MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Адрес страницы (url)">@context.Url</MudTd>
+        <MudTd DataLabel="Порядок">@context.Order</MudTd>
+        <MudTd DataLabel="Название страницы">@context.Name</MudTd>      
+        <MudTd><MudButton Color="Color.Info" @onclick="@((e) => UpdateSitePage(context))">Изменить</MudButton></MudTd>
+        <MudTd><MudButton Color="Color.Error" @onclick="@((e) => DeleteSitePage(context))">Удалить</MudButton></MudTd>
+    </RowTemplate>
+</MudTable>
+
+
+@code {
+    private List<SitePage> sitePages = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("/api/sitepage/all");
+    }
+
+    private async Task AddSitePage()
+    {
+
+        var dialog = DialogService.Show<SitePageAddOrUpdateDialog>("Добавление новой страницы сайта");
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var response = await httpClient.PostAsJsonAsync<SitePage>("/api/sitepage/add", result.Data as SitePage);
+            if (response.IsSuccessStatusCode)
+            {
+                var addedSitePage = await response.Content.ReadFromJsonAsync<SitePage>();
+                sitePages.Add(addedSitePage);
+                Snackbar.Add("Новая страница сайта успешно добавлена!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Не могу добавить новую страницу сайта!", Severity.Error);
+            }
+        }
+    }
+
+
+    private async Task UpdateSitePage(SitePage context)
+    {
+        var parameters = new DialogParameters { ["context"] = context };
+
+        var dialog = DialogService.Show<SitePageAddOrUpdateDialog>("Обновить страницу сайта", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var response = await httpClient.PutAsJsonAsync<SitePage>("/api/sitepage/update", result.Data as SitePage);
+            if (response.IsSuccessStatusCode)
+            {
+                var updatedSitePage = await response.Content.ReadFromJsonAsync<SitePage>();
+                var index = sitePages.IndexOf(context);
+                sitePages.Remove(context);
+                sitePages.Insert(index, updatedSitePage);
+                Snackbar.Add("Информация успешно обновлена!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Не могу обновить информацию!", Severity.Error);
+            }
+        }
+    }
+
+
+    private async Task DeleteSitePage(SitePage context)
+    {
+        var parameters = new DialogParameters { ["context"] = context };
+
+        var dialog = DialogService.Show<SitePageDeleteDialog>("Удалить коренной народ", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var sitePageToDelete = result.Data as SitePage;
+            var response = await httpClient.DeleteAsync($"/api/sitepage/delete/{sitePageToDelete.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                sitePages.Remove(sitePageToDelete);
+                Snackbar.Add("Информация о странице успешно удалена!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Не могу удалить информацию о странице!", Severity.Error);
+            }
+
+        }
+    }
+
+}

@@ -16,7 +16,7 @@ Welcome to your new app.
 </EditForm>
 
 @code {
-    EdutonPetrpku.Shared.Page editorOptions;
+    EdutonPetrpku.Shared.SitePage editorOptions;
     string uploadUrl;
 
     protected override async Task OnInitializedAsync()
@@ -24,7 +24,7 @@ Welcome to your new app.
         var builder = WebAssemblyHostBuilder.CreateDefault();
         uploadUrl = $@"{builder.HostEnvironment.BaseAddress}api/file/upload";
 
-        editorOptions = new EdutonPetrpku.Shared.Page();
+        editorOptions = new EdutonPetrpku.Shared.SitePage();
         editorOptions.InitialText = "Welcome to Qaiser Mehmood github editor5-blazor app";
         var txt = await Task.Run(() => 1);
     }
