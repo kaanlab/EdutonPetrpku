@@ -22,8 +22,8 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<List<Nationality>>> All() =>
-            await _context.Nationalities.Include(u => u.AppUser).ToListAsync();
+        public async Task<ActionResult<Nationality[]>> All() =>
+            await _context.Nationalities.Include(u => u.AppUser).ToArrayAsync();
 
         [HttpPost("add")]
         public async Task<ActionResult<Nationality>> Add(Nationality nationality)

@@ -1,4 +1,5 @@
 ﻿using EdutonPetrpku.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +22,14 @@ namespace EdutonPetrpku.Server.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet("all")]
-        public async Task<ActionResult<List<AppUser>>> All() =>
-            await _userManager.Users.ToListAsync();
 
+        [Authorize]
+        [HttpGet("all")]
+        public async Task<ActionResult<AppUser[]>> All() =>
+            await _userManager.Users.ToArrayAsync();
+
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("add")]
         public async Task<ActionResult<AppUser>> Add(AppUserModel userModel)
         {
@@ -41,6 +46,8 @@ namespace EdutonPetrpku.Server.Controllers
             return Ok(appUser);
         }
 
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPut("update")]
         public async Task<ActionResult<AppUser>> Update(AppUserUpdateModel userModel)
         {
@@ -56,6 +63,8 @@ namespace EdutonPetrpku.Server.Controllers
             return Ok(appUser);
         }
 
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("changepw")]
         public async Task<ActionResult<AppUser>> ChangePassword(AppUserChPassModel userModel)
         {
@@ -70,6 +79,8 @@ namespace EdutonPetrpku.Server.Controllers
             return BadRequest();
         }
 
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpDelete("delete/{usertodelete}")]
         public async Task<ActionResult<AppUser>> Delete(string userToDelete)
         {
