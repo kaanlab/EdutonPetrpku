@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EdutonPetrpku.Shared;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,11 +15,27 @@ namespace EdutonPetrpku.Server.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        [HttpPost("upload"), DisableRequestSizeLimit]
+        public FileController(IWebHostEnvironment hostEnvironment)
+        {
+            _hostEnvironment = hostEnvironment;
+        }
+
+        //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        [HttpPost("upload")]
         public async Task<ActionResult> Upload(IFormFile img)
         {
-            return Ok();
+            var url = Path.Combine("upload", "ckeditor", img.FileName);
+            var fullPath = Path.Combine(_hostEnvironment.ContentRootPath, url);
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                img.CopyTo(stream);
+            }
+
+            var resourcePath = new Uri($"{Request.Scheme}://{Request.Host}/{url}");
+
+            return Ok(resourcePath);
         }
     }
 }

@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdutonPetrpku.Server", "EdutonPetrpku\Server\EdutonPetrpku.Server.csproj", "{82EFDDF4-0F5D-4F7B-B61C-94F6C409E8CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdutonPetrpku.Server", "EdutonPetrpku\Server\EdutonPetrpku.Server.csproj", "{82EFDDF4-0F5D-4F7B-B61C-94F6C409E8CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdutonPetrpku.Client", "EdutonPetrpku\Client\EdutonPetrpku.Client.csproj", "{14303703-9265-499F-8A55-9D3B4C605B3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdutonPetrpku.Client", "EdutonPetrpku\Client\EdutonPetrpku.Client.csproj", "{14303703-9265-499F-8A55-9D3B4C605B3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdutonPetrpku.Shared", "EdutonPetrpku\Shared\EdutonPetrpku.Shared.csproj", "{28C3C130-516E-4F36-8690-530C52EB3238}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdutonPetrpku.Shared", "EdutonPetrpku\Shared\EdutonPetrpku.Shared.csproj", "{28C3C130-516E-4F36-8690-530C52EB3238}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdutonPetrpku.Data", "EdutonPetrpku.Data\EdutonPetrpku.Data.csproj", "{CF70B6DA-9C19-4091-850F-391F6CE66920}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdutonPetrpku.Data", "EdutonPetrpku.Data\EdutonPetrpku.Data.csproj", "{CF70B6DA-9C19-4091-850F-391F6CE66920}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

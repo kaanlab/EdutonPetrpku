@@ -4,8 +4,10 @@ using EdutonPetrpku.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +34,7 @@ namespace EdutonPetrpku.Server
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllersWithViews().AddJsonOptions(options =>
+            services.AddControllersWithViews().AddJsonOptions(options => 
                     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
             services.AddRazorPages();
 
@@ -74,10 +76,11 @@ namespace EdutonPetrpku.Server
 
             app.UseBlazorFrameworkFiles();
 
-            app.UseStaticFiles(new StaticFileOptions
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "uploadfolder")),
-                RequestPath = "/uploadfolder"                
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "upload")),
+                RequestPath = new PathString("/upload")
             });
 
             app.UseRouting();

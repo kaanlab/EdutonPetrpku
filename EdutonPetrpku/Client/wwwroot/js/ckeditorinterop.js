@@ -34,7 +34,7 @@
             // a POST request with JSON as a data structure but your configuration
             // could be different.
             xhr.open('POST', uploadToUrl, true);
-            xhr.responseType = 'json';
+            xhr.responseType = 'json';            
         }
 
         // Initializes XMLHttpRequest listeners.
