@@ -1,12 +1,25 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
 
-<h1>Hello, world!</h1>
+@inject HttpClient httpClient
 
-Welcome to your new app.
+@if (sitePage is not null)
+{
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    @((MarkupString)sitePage.Content)
+
+}
+else
+{
+    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+}
 
 @code {
 
+    SitePage sitePage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sitePage = await httpClient.GetFromJsonAsync<SitePage>($"/api/sitepage/main");
+
+    }
 }

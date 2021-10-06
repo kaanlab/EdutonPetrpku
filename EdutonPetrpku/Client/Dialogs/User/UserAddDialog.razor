@@ -1,25 +1,25 @@
-<MudDialog>
+п»ї<MudDialog>
     <DialogContent>
         <EditForm EditContext="@editContext">
             <DataAnnotationsValidator />
 
-            <MudTextField Label="Логотип" Class="mt-3" Lines="2"
+            <MudTextField Label="Р›РѕРіРѕС‚РёРї" Class="mt-3" Lines="2"
                           @bind-Value="Context.Image" For="@(() => Context.Image)" />
-            <MudTextField Label="Название училища" Class="mt-3"
+            <MudTextField Label="РќР°Р·РІР°РЅРёРµ СѓС‡РёР»РёС‰Р°" Class="mt-3"
                           @bind-Value="Context.DisplayName" For="@(() => Context.DisplayName)" />
-            <MudTextField Label="Логин" Class="mt-3"
+            <MudTextField Label="Р›РѕРіРёРЅ" Class="mt-3"
                           @bind-Value="Context.UserName" For="@(() => Context.UserName)" />
-            <MudTextField Label="Почта" Class="mt-3"
+            <MudTextField Label="РџРѕС‡С‚Р°" Class="mt-3"
                           @bind-Value="Context.Email" For="@(() => Context.Email)" />
-            <MudTextField Label="Пароль" Class="mt-3" InputType="InputType.Password"
+            <MudTextField Label="РџР°СЂРѕР»СЊ" Class="mt-3" InputType="InputType.Password"
                           @bind-Value="Context.Password" For="@(() => Context.Password)" />
-            <MudTextField Label="Повторить пароль" Class="mt-3" InputType="InputType.Password"
+            <MudTextField Label="РџРѕРІС‚РѕСЂРёС‚СЊ РїР°СЂРѕР»СЊ" Class="mt-3" InputType="InputType.Password"
                           @bind-Value="Context.ConfirmPassword" For="@(() => Context.ConfirmPassword)" />
         </EditForm>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">Отменить</MudButton>
-        <MudButton ButtonType="ButtonType.Submit" Color="Color.Info" OnClick="Add" Disabled="@formInvalid">Сохранить</MudButton>
+        <MudButton OnClick="Cancel">РћС‚РјРµРЅРёС‚СЊ</MudButton>
+        <MudButton ButtonType="ButtonType.Submit" Color="Color.Info" OnClick="Add" Disabled="@formInvalid">РЎРѕС…СЂР°РЅРёС‚СЊ</MudButton>
     </DialogActions>
 </MudDialog>
 

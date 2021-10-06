@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+	  <Version>0.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Dialogs\Nationality\" />
-    <Folder Include="Dialogs\User\" />
     <Folder Include="wwwroot\js\" />
   </ItemGroup>
 

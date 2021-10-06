@@ -1,29 +1,27 @@
 ﻿@inherits LayoutComponentBase
 
+@inject IAppVersionService AppVersionService
+
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <AppBar />
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-    <main>
-        <MudContainer>
+<main>
+    <MudContainer Class="my-16">
             @Body
-        </MudContainer>
-    </main>
-    <footer class="footer fixed-bottom footer-bgfoto">
-        <div class="container">
-            <div class="row mt-2">
-                <div class="col-6">
-                    <p class="text-left">Лаборатория ИОТ &copy; 2019</p>
-                </div>
-                <div class="col-6">
-                    <p class="text-right">v. </p>
-                </div>
+    </MudContainer>
+</main>
+<footer class="footer fixed-bottom">
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-6">
+                <p class="text-left">Петрозаводское ПКУ  |  Лаборатория ИОТ &copy; 2021</p>
+            </div>
+            <div class="col-6">
+                <p class="text-right">v @AppVersionService.Version</p>
             </div>
         </div>
-    </footer>
-</div>
+    </div>
+</footer>
+

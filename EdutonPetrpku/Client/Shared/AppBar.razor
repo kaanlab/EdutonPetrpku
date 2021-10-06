@@ -1,6 +1,21 @@
-﻿
-<MudAppBar Color="Color.Primary" Fixed="false">
-     <MudSpacer />
+﻿@inject HttpClient httpClient
+
+
+<MudAppBar Color="Color.Primary" Fixed="true">
+    <MudMenu Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit">
+        @if (sitePages is null)
+        {
+        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+        }
+        else
+        {
+            @foreach (var sitePage in sitePages)
+            {
+                <MudMenuItem Link="@sitePage.Url">@sitePage.Name</MudMenuItem>
+            }
+        }
+    </MudMenu>
+    <MudSpacer />
     <AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
         <MudIconButton Icon="@Icons.Material.Outlined.AdminPanelSettings" Color="Color.Inherit" Link="/admin" />
     </AuthorizeView>
@@ -10,7 +25,7 @@
                 @context.User.Claims.FirstOrDefault(u => u.Type == "given_name")?.Value
             </MudChip>
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Link="/survey" Target="_blank">Выбор темы</MudButton>
+            <MudButton StartIcon="@Icons.Material.Outlined.Error" Variant="Variant.Filled" Color="Color.Secondary" Link="/survey">Выбрать тему курса</MudButton>
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
             <MudIconButton Icon="@Icons.Material.Outlined.Logout" Color="Color.Inherit" Link="/logout" />
         </Authorized>
@@ -20,3 +35,13 @@
     </AuthorizeView>
 </MudAppBar>
 
+@code {
+
+    private List<SitePage> sitePages = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("/api/sitepage/all");
+
+    }
+}

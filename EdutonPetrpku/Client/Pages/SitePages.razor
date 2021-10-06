@@ -1,4 +1,4 @@
-﻿@page "/sitepage/{url}"
+﻿@page "/{url}"
 
 @inject HttpClient httpClient
 
@@ -10,7 +10,7 @@
 }
 else
 {
-    <span>loading...</span>
+    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
 }
 
 @code {

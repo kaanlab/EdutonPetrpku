@@ -28,6 +28,7 @@
 
 @code {
     private List<SitePage> sitePages = null;
+    DialogOptions fullScreen = new DialogOptions() { FullScreen = true, CloseButton = true };
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,7 +38,7 @@
     private async Task AddSitePage()
     {
 
-        var dialog = DialogService.Show<SitePageAddOrUpdateDialog>("Добавление новой страницы сайта");
+        var dialog = DialogService.Show<SitePageAddOrUpdateDialog>("Добавление новой страницы сайта", fullScreen);
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
@@ -60,7 +61,7 @@
     {
         var parameters = new DialogParameters { ["context"] = context };
 
-        var dialog = DialogService.Show<SitePageAddOrUpdateDialog>("Обновить страницу сайта", parameters);
+        var dialog = DialogService.Show<SitePageAddOrUpdateDialog>("Обновить страницу сайта", parameters, fullScreen);
         var result = await dialog.Result;
         if (!result.Cancelled)
         {

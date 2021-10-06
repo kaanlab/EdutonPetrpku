@@ -30,6 +30,11 @@ a, .btn-link {
     color: red;
 }
 
+
+footer {
+    background-color :gainsboro;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

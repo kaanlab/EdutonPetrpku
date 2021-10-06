@@ -23,7 +23,11 @@ namespace EdutonPetrpku.Server.Controllers
 
         [HttpGet("all")]
         public async Task<ActionResult<SitePage[]>> All() =>
-              await _context.SitePages.ToArrayAsync();
+              await _context.SitePages.OrderBy(o => o.Order).ToArrayAsync();
+
+        [HttpGet("main")]
+        public async Task<ActionResult<SitePage>> GetMainPage() =>
+            await _context.SitePages.FirstOrDefaultAsync(p => p.Order == 1);
 
         [HttpGet("{url}")]
         public async Task<ActionResult<SitePage>> GetPage(string url) =>        

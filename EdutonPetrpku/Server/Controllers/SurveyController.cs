@@ -26,15 +26,19 @@ namespace EdutonPetrpku.Server.Controllers
         [HttpPost("savechoice")]
         public async Task<ActionResult<Nationality>> SaveChoice(SurveyModel surveyModel)
         {
-            var nationality = _context.Nationalities.FirstOrDefault(n => n.Id == surveyModel.NationalityId);
-            var appUser = await _userManager.FindByIdAsync(surveyModel.AppUserId);
-            nationality.AppUser = new AppUser();
-            nationality.AppUser = appUser;
+            if (surveyModel.AppUserId is not null &&  surveyModel.NationalityId > 0)
+            {
+                var nationality = _context.Nationalities.FirstOrDefault(n => n.Id == surveyModel.NationalityId);
+                var appUser = await _userManager.FindByIdAsync(surveyModel.AppUserId);
+                nationality.AppUser = new AppUser();
+                nationality.AppUser = appUser;
 
-            _context.Update(nationality);
-            await _context.SaveChangesAsync();
+                _context.Update(nationality);
+                await _context.SaveChangesAsync();
 
-            return Ok(nationality);
+                return Ok(nationality);
+            }
+            return BadRequest();
         }
     }
 }

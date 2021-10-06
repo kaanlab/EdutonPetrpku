@@ -35,7 +35,7 @@ namespace EdutonPetrpku.Server.Controllers
 
             var resourcePath = new Uri($"{Request.Scheme}://{Request.Host}/{url}");
 
-            return Ok(resourcePath);
+            return Ok(new { url = resourcePath.AbsoluteUri });
         }
     }
 }

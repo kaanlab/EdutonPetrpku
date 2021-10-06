@@ -5,16 +5,16 @@
     <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Петрозаводское ПКУ</MudText>
     <MudDivider Class="my-2" />
     @if (sitePages is null)
+    {
+        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+    }
+    else
+    {
+        @foreach (var sitePage in sitePages)
         {
-    <span> Loading...</span>
+            <MudNavLink Href="@($"/sitepage/{sitePage.Url}")">@sitePage.Name</MudNavLink>
         }
-        else
-        {
-    @foreach (var sitePage in sitePages)
-            {
-    <MudNavLink Href="@($"/sitepage/{sitePage.Url}")">@sitePage.Name</MudNavLink>
-            }
-        }
+    }
 </MudNavMenu>
 
 @code {

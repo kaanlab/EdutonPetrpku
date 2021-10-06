@@ -11,31 +11,44 @@
 
 @if (allNationalities is null)
 {
-    <span>
-        Loading...
-    </span>
+    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
 }
 else if (checkedNationaliti is not null)
 {
-    <p> @checkedNationaliti.Name</p>
-    <p> @checkedNationaliti.Population</p>
-
+    <MudText Typo="Typo.h6" Class="my-4">Спасибо!</MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudTextField @bind-Value="checkedNationaliti.Name" Label="Вы выбрали коренной народ" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Groups" AdornmentColor="Color.Info" Disabled="true" />
+        </MudItem>
+    </MudGrid>
 }
 else
 {
+    <MudText Typo="Typo.h6" Class="my-4">Ваша тема курса для эдутона</MudText>
     <EditForm Model="@model" OnInvalidSubmit="OnValidSubmit">
-        <MudItem xs="12" sm="6" md="4">
-            <MudSelect Label="Select fast-food" @bind-Value="UserChoice" HelperText="String" Placeholder="Please Select"
-                       OffsetY="true" AdornmentIcon="@Icons.Material.Filled.Fastfood" AdornmentColor="Color.Primary">
-                @foreach (Nationality nationality in freeNationalities)
-                    {
-                    <MudSelectItem Value="@nationality.Id">@nationality.Name</MudSelectItem>
-                    }
-            </MudSelect>
-        </MudItem>
-        <div class="col-12 mb-2">
-            <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Primary" OnClick="AcceptSuvery">Primary</MudButton>
-        </div>
+        <MudCard>
+            <MudCardContent>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudSelect Label="Перечень коренных малочисленных народов" @bind-Value="UserChoice" HelperText="Коренной народ"
+                               AdornmentIcon="@Icons.Material.Filled.Groups" AdornmentColor="Color.Primary" Required="true">
+                        @foreach (Nationality nationality in freeNationalities)
+                            {
+                            <MudSelectItem Value="@nationality.Id">@nationality.Name</MudSelectItem>
+                            }
+                    </MudSelect>
+                </MudItem>
+            </MudCardContent>
+            <MudCardActions>
+                @if (UserChoice > 0)
+                {
+                    <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Primary" OnClick="AcceptSuvery">Сохранить</MudButton>
+                }
+                else
+                {
+                    <MudAlert Severity="Severity.Info">Вы еще не выбрали тему для курса! Выберите тему из перечня и нажмите ""сохранить"</MudAlert>
+                }
+            </MudCardActions>
+        </MudCard>
     </EditForm>
 }
 
@@ -49,10 +62,12 @@ else
     private SurveyModel model = new SurveyModel();
     private bool success;
 
+
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
     private int UserChoice { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {

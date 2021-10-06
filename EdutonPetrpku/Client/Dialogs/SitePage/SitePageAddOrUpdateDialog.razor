@@ -4,17 +4,19 @@
     <DialogContent>
         <EditForm EditContext="@editContext">
             <DataAnnotationsValidator />
-
             <MudTextField Label="Адрес страницы (url)" Class="mt-3" Lines="2"
                           @bind-Value="Context.Url" For="@(() => Context.Name)" />
             <MudTextField Label="Порядок" Class="mt-3"
                           @bind-Value="Context.Order" For="@(() => Context.Order)" />
             <MudTextField Label="Название раздела" Class="mt-3"
-                          @bind-Value="Context.Name" For="@(() => Context.Name)" />            
-            <CKEditor Id="MyEditor1"
-                      @bind-Value=@Context.Content
-                      UrlToPostImage=@uploadUrl>
-            </CKEditor>
+                          @bind-Value="Context.Name" For="@(() => Context.Name)" />
+            <MudText Typo="Typo.body2" Class="my-4">Содержание раздела</MudText>
+            <MudContainer Style="max-height: 600px; overflow-y: scroll">
+                <CKEditor Id="MyEditor1"
+                          @bind-Value=@Context.Content
+                          UrlToPostImage=@uploadUrl>
+                </CKEditor>
+            </MudContainer>
         </EditForm>
     </DialogContent>
     <DialogActions>
