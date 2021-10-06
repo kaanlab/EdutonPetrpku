@@ -63,7 +63,7 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
         [HttpDelete("delete/{nationalityId}")]
-        public async Task<ActionResult<Nationality>> Delete(string nationalityId)
+        public async Task<ActionResult> Delete(string nationalityId)
         {
             var nationalityToDelete = await _context.Nationalities.FirstOrDefaultAsync(n => n.Id == int.Parse(nationalityId));
 

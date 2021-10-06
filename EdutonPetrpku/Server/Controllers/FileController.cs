@@ -24,7 +24,7 @@ namespace EdutonPetrpku.Server.Controllers
 
         //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("upload")]
-        public async Task<ActionResult> Upload(IFormFile img)
+        public ActionResult Upload(IFormFile img)
         {
             var url = Path.Combine("upload", "ckeditor", img.FileName);
             var fullPath = Path.Combine(_hostEnvironment.ContentRootPath, url);

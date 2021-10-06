@@ -1,5 +1,59 @@
-﻿<h3>SitePageAddOrUpdateDialog</h3>
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+
+<MudDialog>
+    <DialogContent>
+        <EditForm EditContext="@editContext">
+            <DataAnnotationsValidator />
+
+            <MudTextField Label="Адрес страницы (url)" Class="mt-3" Lines="2"
+                          @bind-Value="Context.Url" For="@(() => Context.Name)" />
+            <MudTextField Label="Порядок" Class="mt-3"
+                          @bind-Value="Context.Order" For="@(() => Context.Order)" />
+            <MudTextField Label="Название раздела" Class="mt-3"
+                          @bind-Value="Context.Name" For="@(() => Context.Name)" />            
+            <CKEditor Id="MyEditor1"
+                      @bind-Value=@Context.Content
+                      UrlToPostImage=@uploadUrl>
+            </CKEditor>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Отменить</MudButton>
+        <MudButton ButtonType="ButtonType.Submit" Color="Color.Info" OnClick="AddOrUpdate" Disabled="@formInvalid">Сохранить</MudButton>
+    </DialogActions>
+</MudDialog>
 
 @code {
 
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public SitePage Context { get; set; } = new SitePage();
+
+    private bool formInvalid = true;
+    private EditContext editContext;
+
+    string uploadUrl;
+
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(Context);
+        editContext.OnFieldChanged += HandleFieldChanged;
+
+        var builder = WebAssemblyHostBuilder.CreateDefault();
+        uploadUrl = $@"{builder.HostEnvironment.BaseAddress}api/file/upload";
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        formInvalid = !editContext.Validate();
+        StateHasChanged();
+    }
+
+
+    void AddOrUpdate() => MudDialog.Close(DialogResult.Ok(Context));
+
+    void Cancel() => MudDialog.Cancel();
 }

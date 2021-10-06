@@ -1,37 +1,29 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">EdutonPetrpku</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
+﻿@inject HttpClient httpClient
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </li>
-    </ul>
-</div>
+<MudNavMenu>
+    <MudText Typo="Typo.h6" Class="px-4">Эдутон 2021</MudText>
+    <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Петрозаводское ПКУ</MudText>
+    <MudDivider Class="my-2" />
+    @if (sitePages is null)
+        {
+    <span> Loading...</span>
+        }
+        else
+        {
+    @foreach (var sitePage in sitePages)
+            {
+    <MudNavLink Href="@($"/sitepage/{sitePage.Url}")">@sitePage.Name</MudNavLink>
+            }
+        }
+</MudNavMenu>
 
 @code {
-    private bool collapseNavMenu = true;
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private List<SitePage> sitePages = null;
 
-    private void ToggleNavMenu()
+    protected override async Task OnInitializedAsync()
     {
-        collapseNavMenu = !collapseNavMenu;
+        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("/api/sitepage/all");
+
     }
 }

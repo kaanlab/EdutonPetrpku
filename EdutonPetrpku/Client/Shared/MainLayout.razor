@@ -1,21 +1,29 @@
 ﻿@inherits LayoutComponentBase
 
-    <MudThemeProvider />
-    <MudDialogProvider />
-    <MudSnackbarProvider />
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-    <div class="page">
-        <div class="sidebar">
-            <NavMenu />
-        </div>
-
-        <div class="main">
-            <div class="top-row px-4">
-                <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
-            </div>
-
-            <div class="content px-4">
-                @Body
-            </div>
-        </div>
+<AppBar />
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
     </div>
+    <main>
+        <MudContainer>
+            @Body
+        </MudContainer>
+    </main>
+    <footer class="footer fixed-bottom footer-bgfoto">
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col-6">
+                    <p class="text-left">Лаборатория ИОТ &copy; 2019</p>
+                </div>
+                <div class="col-6">
+                    <p class="text-right">v. </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>

@@ -1,0 +1,16 @@
+﻿@inject HttpClient httpClient
+
+@sitePage.Content
+
+@code {
+    [Parameter]
+    public string SitePageUrl { get; set; }
+
+    SitePage sitePage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        sitePage = await httpClient.GetFromJsonAsync<SitePage>($"/api/sitepage/{SitePageUrl}");
+
+    }
+}

@@ -1,0 +1,27 @@
+﻿@page "/sitepage/{url}"
+
+@inject HttpClient httpClient
+
+@if (sitePage is not null)
+{
+
+    @((MarkupString)sitePage.Content)
+
+}
+else
+{
+    <span>loading...</span>
+}
+
+@code {
+    [Parameter]
+    public string Url { get; set; }
+
+    SitePage sitePage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        sitePage = await httpClient.GetFromJsonAsync<SitePage>($"/api/sitepage/{Url}");
+
+    }
+}

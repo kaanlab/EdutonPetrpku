@@ -82,7 +82,7 @@ namespace EdutonPetrpku.Server.Controllers
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpDelete("delete/{usertodelete}")]
-        public async Task<ActionResult<AppUser>> Delete(string userToDelete)
+        public async Task<ActionResult> Delete(string userToDelete)
         {
             if (userToDelete == GlobalVarables.SITE_ADMIN_ACCOUNT)
             {

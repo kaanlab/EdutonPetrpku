@@ -1,0 +1,22 @@
+﻿
+<MudAppBar Color="Color.Primary" Fixed="false">
+     <MudSpacer />
+    <AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
+        <MudIconButton Icon="@Icons.Material.Outlined.AdminPanelSettings" Color="Color.Inherit" Link="/admin" />
+    </AuthorizeView>
+    <AuthorizeView>
+        <Authorized>
+            <MudChip Color="Color.Dark">
+                @context.User.Claims.FirstOrDefault(u => u.Type == "given_name")?.Value
+            </MudChip>
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Link="/survey" Target="_blank">Выбор темы</MudButton>
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Logout" Color="Color.Inherit" Link="/logout" />
+        </Authorized>
+        <NotAuthorized>
+            <MudIconButton Icon="@Icons.Material.Outlined.Login" Color="Color.Inherit" Link="/login" />
+        </NotAuthorized>
+    </AuthorizeView>
+</MudAppBar>
+
