@@ -21,6 +21,7 @@
     </AuthorizeView>
     <AuthorizeView>
         <Authorized>
+            <MudAvatar Image="@context.User.Claims.FirstOrDefault(u => u.Type == "website")?.Value" />
             <MudChip Color="Color.Dark">
                 @context.User.Claims.FirstOrDefault(u => u.Type == "given_name")?.Value
             </MudChip>

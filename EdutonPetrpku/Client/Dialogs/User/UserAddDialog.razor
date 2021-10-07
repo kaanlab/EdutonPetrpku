@@ -1,10 +1,30 @@
-﻿<MudDialog>
+﻿@using System.Text.Json
+@inject HttpClient httpClient
+
+<MudDialog>
     <DialogContent>
         <EditForm EditContext="@editContext">
             <DataAnnotationsValidator />
-
-            <MudTextField Label="Логотип" Class="mt-3" Lines="2"
-                          @bind-Value="Context.Image" For="@(() => Context.Image)" />
+            <MudGrid Class="mt-5">
+                <MudItem>
+                    @if (string.IsNullOrEmpty(Context.Image))
+                    {
+                        <img class="img-thumbnail" src="/upload/empty.jpg" style="min-height:250px;height:250px;" />
+                    }
+                    else
+                    {
+                        <img class="img-thumbnail" src="@Context.Image" style="min-height:250px;height:250px;" />
+                    }
+                </MudItem>
+                <MudItem>
+                    <InputFile id="fileInput" OnChange="OnInputFileChange" hidden />
+                    <MudFab HtmlTag="label"
+                            Color="Color.Secondary"
+                            Icon="@Icons.Filled.Image"
+                            Label="Загрузить"
+                            for="fileInput" />
+                </MudItem>
+            </MudGrid>
             <MudTextField Label="Название училища" Class="mt-3"
                           @bind-Value="Context.DisplayName" For="@(() => Context.DisplayName)" />
             <MudTextField Label="Логин" Class="mt-3"
@@ -33,6 +53,8 @@
 
     private bool formInvalid = true;
     private EditContext editContext;
+    private readonly string imgPath = "upload";
+    private int maxAllowedFiles = 1;
 
 
     protected override void OnInitialized()
@@ -47,8 +69,55 @@
         StateHasChanged();
     }
 
+    async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        long maxFileSize = 1024 * 1024 * 15;
+        var upload = false;
 
-    void Add() => MudDialog.Close(DialogResult.Ok(Context));
+        using var content = new MultipartFormDataContent();
+
+        var fileContent =
+                new StreamContent(e.File.OpenReadStream(maxFileSize));
+
+        fileContent.Headers.ContentType =
+            new System.Net.Http.Headers.MediaTypeHeaderValue(e.File.ContentType);
+
+
+        content.Add(
+            content: fileContent,
+            name: "\"files\"",
+            fileName: e.File.Name);
+
+        upload = true;
+
+        if (upload)
+        {
+            var response = await httpClient.PostAsync("/api/file/avatar", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                using var responseStream = await response.Content.ReadAsStreamAsync();
+
+                var newUploadResult = await JsonSerializer.DeserializeAsync<UploadFileModel>(responseStream, options);
+                Context.Image = newUploadResult.Url;
+            }
+
+        }
+    }
+
+    void Add()
+    {
+        if (string.IsNullOrEmpty(Context.Image))
+            Context.Image = @$"{imgPath}\empty.jpg";
+
+        MudDialog.Close(DialogResult.Ok(Context));
+    }
 
     void Cancel() => MudDialog.Cancel();
+
 }

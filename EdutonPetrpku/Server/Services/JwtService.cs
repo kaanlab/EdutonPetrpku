@@ -28,7 +28,7 @@ namespace EdutonPetrpku.Server.Services
                 new Claim(ClaimTypes.Sid, appUser.Id.ToString()),
                 new Claim(ClaimTypes.Name, appUser.UserName),
                 new Claim(ClaimTypes.GivenName, appUser.DisplayName),
-                new Claim(ClaimTypes.Thumbprint, appUser.Image)
+                new Claim(ClaimTypes.Webpage, appUser.Image)
 
             };
 

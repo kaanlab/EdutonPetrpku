@@ -24,7 +24,7 @@ namespace EdutonPetrpku.Server.Controllers
 
         //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("upload")]
-        public ActionResult Upload(IFormFile img)
+        public ActionResult UploadImg(IFormFile img)
         {
             var url = Path.Combine("upload", "ckeditor", img.FileName);
             var fullPath = Path.Combine(_hostEnvironment.ContentRootPath, url);
@@ -36,6 +36,21 @@ namespace EdutonPetrpku.Server.Controllers
             var resourcePath = new Uri($"{Request.Scheme}://{Request.Host}/{url}");
 
             return Ok(new { url = resourcePath.AbsoluteUri });
+        }
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        [HttpPost("avatar")]
+        public ActionResult<UploadFileModel> UploadAvatar([FromForm] IEnumerable<IFormFile> files)
+        {
+            var file = files.FirstOrDefault();
+            var url = Path.Combine("upload", file.FileName);
+            var fullPath = Path.Combine(_hostEnvironment.ContentRootPath, url);
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }            
+
+            return Ok(new UploadFileModel { Url = url });
         }
     }
 }

@@ -31,10 +31,11 @@ else
                 <MudItem xs="12" sm="6" md="4">
                     <MudSelect Label="Перечень коренных малочисленных народов" @bind-Value="UserChoice" HelperText="Коренной народ"
                                AdornmentIcon="@Icons.Material.Filled.Groups" AdornmentColor="Color.Primary" Required="true">
+                        <MudSelectItem Value="-1" Disabled="true">Выберите тему из списка</MudSelectItem>
                         @foreach (Nationality nationality in freeNationalities)
-                            {
+                        {
                             <MudSelectItem Value="@nationality.Id">@nationality.Name</MudSelectItem>
-                            }
+                        }
                     </MudSelect>
                 </MudItem>
             </MudCardContent>
@@ -45,7 +46,7 @@ else
                 }
                 else
                 {
-                    <MudAlert Severity="Severity.Info">Вы еще не выбрали тему для курса! Выберите тему из перечня и нажмите ""сохранить"</MudAlert>
+                    <MudAlert Severity="Severity.Info">Вы еще не выбрали тему для курса!</MudAlert>
                 }
             </MudCardActions>
         </MudCard>
@@ -66,7 +67,7 @@ else
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
-    private int UserChoice { get; set; }
+    private int UserChoice { get; set; } = -1;
 
 
     protected override async Task OnInitializedAsync()
