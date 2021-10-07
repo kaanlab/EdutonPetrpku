@@ -22,12 +22,32 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<SitePage[]>> All() =>
-              await _context.SitePages.OrderBy(o => o.Order).ToArrayAsync();
+        public async Task<ActionResult<SitePage[]>> All()
+        {
+          var pages = await _context.SitePages.OrderBy(o => o.Order).ToArrayAsync();
+            if(pages is not null)
+            {
+                return Ok(pages);
+            }
+            else
+            {
+                return Ok(Enumerable.Empty<SitePage>().ToArray());
+            }
+        }
 
         [HttpGet("main")]
-        public async Task<ActionResult<SitePage>> GetMainPage() =>
-            await _context.SitePages.FirstOrDefaultAsync(p => p.Order == 1);
+        public async Task<ActionResult<SitePage>> GetMainPage()
+        {            
+           var main = await _context.SitePages.FirstOrDefaultAsync(p => p.Order == 1);
+            if(main is not null)
+            {
+                return Ok(main);
+            }
+            else
+            {
+                return Ok(new SitePage());
+            }
+        }
 
         [HttpGet("{url}")]
         public async Task<ActionResult<SitePage>> GetPage(string url) =>        

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EdutonPetrpku.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211006064714_AddSitePageEnity")]
-    partial class AddSitePageEnity
+    [Migration("20211007125805_InitMigration")]
+    partial class InitMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

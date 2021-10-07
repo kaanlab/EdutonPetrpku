@@ -33,15 +33,16 @@ else
                                AdornmentIcon="@Icons.Material.Filled.Groups" AdornmentColor="Color.Primary" Required="true">
                         <MudSelectItem Value="-1" Disabled="true">Выберите тему из списка</MudSelectItem>
                         @foreach (Nationality nationality in freeNationalities)
-                        {
+                            {
                             <MudSelectItem Value="@nationality.Id">@nationality.Name</MudSelectItem>
-                        }
+                            }
                     </MudSelect>
                 </MudItem>
             </MudCardContent>
             <MudCardActions>
                 @if (UserChoice > 0)
                 {
+                    <MudAlert Severity="Severity.Warning">После нажатия на кнопку сохранить вы не сможите поменять тему!</MudAlert>
                     <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Primary" OnClick="AcceptSuvery">Сохранить</MudButton>
                 }
                 else

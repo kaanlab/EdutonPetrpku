@@ -49,6 +49,22 @@ namespace EdutonPetrpku.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SitePages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Order = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SitePages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -242,6 +258,9 @@ namespace EdutonPetrpku.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Nationalities");
+
+            migrationBuilder.DropTable(
+                name: "SitePages");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
