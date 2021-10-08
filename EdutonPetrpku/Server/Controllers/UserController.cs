@@ -1,4 +1,5 @@
-﻿using EdutonPetrpku.Shared;
+﻿using EdutonPetrpku.Data;
+using EdutonPetrpku.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +24,7 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
 
-        [Authorize]
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpGet("all")]
         public async Task<ActionResult<AppUser[]>> All() =>
             await _userManager.Users.ToArrayAsync();

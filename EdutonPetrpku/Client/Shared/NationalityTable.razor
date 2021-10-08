@@ -31,7 +31,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        nationalities = await httpClient.GetFromJsonAsync<List<Nationality>>("/api/nationality/all");
+        nationalities = await httpClient.GetFromJsonAsync<List<Nationality>>("api/nationality/all");
     }
 
     private async Task AddNationality()
@@ -41,7 +41,7 @@
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PostAsJsonAsync<Nationality>("/api/nationality/add", result.Data as Nationality);
+            var response = await httpClient.PostAsJsonAsync<Nationality>("api/nationality/add", result.Data as Nationality);
             if (response.IsSuccessStatusCode)
             {
                 var addedNationality = await response.Content.ReadFromJsonAsync<Nationality>();
@@ -64,7 +64,7 @@
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PutAsJsonAsync<Nationality>("/api/nationality/update", result.Data as Nationality);
+            var response = await httpClient.PutAsJsonAsync<Nationality>("api/nationality/update", result.Data as Nationality);
             if (response.IsSuccessStatusCode)
             {
                 var updatedNationality = await response.Content.ReadFromJsonAsync<Nationality>();
@@ -90,7 +90,7 @@
         if (!result.Cancelled)
         {
             var nationalityToDelete = result.Data as Nationality;
-            var response = await httpClient.DeleteAsync($"/api/nationality/delete/{nationalityToDelete.Id}");
+            var response = await httpClient.DeleteAsync($"api/nationality/delete/{nationalityToDelete.Id}");
             if (response.IsSuccessStatusCode)
             {
                 nationalities.Remove(nationalityToDelete);

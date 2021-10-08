@@ -9,7 +9,7 @@
                 <MudItem>
                     @if (string.IsNullOrEmpty(Context.Image))
                     {
-                        <img class="img-thumbnail" src="/upload/empty.jpg" style="min-height:250px;height:250px;" />
+                        <img class="img-thumbnail" src="upload/empty.jpg" style="min-height:250px;height:250px;" />
                     }
                     else
                     {
@@ -113,7 +113,7 @@
     void Add()
     {
         if (string.IsNullOrEmpty(Context.Image))
-            Context.Image = @$"{imgPath}\empty.jpg";
+            Context.Image = @$"{imgPath}/empty.jpg";
 
         MudDialog.Close(DialogResult.Ok(Context));
     }

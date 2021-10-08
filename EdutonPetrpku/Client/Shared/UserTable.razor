@@ -31,11 +31,11 @@
 
 
 @code {
-    private List<AppUser> appUsers = null;
+    private List<AppUser> appUsers = new List<AppUser>();
 
     protected override async Task OnInitializedAsync()
     {
-        appUsers = await httpClient.GetFromJsonAsync<List<AppUser>>("/api/user/all");
+        appUsers = await httpClient.GetFromJsonAsync<List<AppUser>>("api/user/all");
     }
 
     private async Task AddUser()
@@ -45,7 +45,7 @@
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PostAsJsonAsync<AppUserModel>("/api/user/add", result.Data as AppUserModel);
+            var response = await httpClient.PostAsJsonAsync<AppUserModel>("api/user/add", result.Data as AppUserModel);
             if (response.IsSuccessStatusCode)
             {
                 var addedUser = await response.Content.ReadFromJsonAsync<AppUser>();
@@ -69,7 +69,7 @@
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PutAsJsonAsync<AppUserUpdateModel>("/api/user/update", result.Data as AppUserUpdateModel);
+            var response = await httpClient.PutAsJsonAsync<AppUserUpdateModel>("api/user/update", result.Data as AppUserUpdateModel);
             if (response.IsSuccessStatusCode)
             {
                 var updatedUser = await response.Content.ReadFromJsonAsync<AppUser>();
@@ -96,7 +96,7 @@
 
         if (!result.Cancelled)
         {
-            var response = await httpClient.PostAsJsonAsync<AppUserChPassModel>("/api/user/changepw", result.Data as AppUserChPassModel);
+            var response = await httpClient.PostAsJsonAsync<AppUserChPassModel>("api/user/changepw", result.Data as AppUserChPassModel);
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add("Пароль успешно обновлен!", Severity.Success);
@@ -124,7 +124,7 @@
             if (!result.Cancelled)
             {
                 var userToDelete = result.Data as AppUser;
-                var response = await httpClient.DeleteAsync($"/api/user/delete/{userToDelete.UserName}");
+                var response = await httpClient.DeleteAsync($"api/user/delete/{userToDelete.UserName}");
                 if (response.IsSuccessStatusCode)
                 {
                     appUsers.Remove(userToDelete);

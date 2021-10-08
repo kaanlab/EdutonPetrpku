@@ -42,7 +42,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("/api/sitepage/all");
+        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("api/sitepage/all");
 
     }
 }

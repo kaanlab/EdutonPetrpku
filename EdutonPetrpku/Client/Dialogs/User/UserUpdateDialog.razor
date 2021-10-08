@@ -30,7 +30,7 @@
             <MudTextField Label="Логин" Class="mt-3"
                           @bind-Value="Context.UserName" For="@(() => Context.UserName)" />
             <MudTextField Label="Почта" Class="mt-3"
-                          @bind-Value="Context.Email" For="@(() => Context.Email)" />
+                          @bind-Value="Context.Email" For="@(() => Context.Email)" />         
         </EditForm>
     </DialogContent>
     <DialogActions>
@@ -89,7 +89,7 @@
 
         if (upload)
         {
-            var response = await httpClient.PostAsync("/api/file/avatar", content);
+            var response = await httpClient.PostAsync("api/file/avatar", content);
 
             if (response.IsSuccessStatusCode)
             {

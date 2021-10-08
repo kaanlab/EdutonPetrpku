@@ -42,7 +42,7 @@ else
             <MudCardActions>
                 @if (UserChoice > 0)
                 {
-                    <MudAlert Severity="Severity.Warning">После нажатия на кнопку сохранить вы не сможите поменять тему!</MudAlert>
+                    <MudAlert Severity="Severity.Warning">После нажатия на кнопку сохранить вы не сможете поменять тему!</MudAlert>
                     <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Primary" OnClick="AcceptSuvery">Сохранить</MudButton>
                 }
                 else
@@ -92,7 +92,7 @@ else
         model.AppUserId = authUserId;
         model.NationalityId = UserChoice;
 
-        var response = await httpClient.PostAsJsonAsync<SurveyModel>("/api/survey/savechoice", model);
+        var response = await httpClient.PostAsJsonAsync<SurveyModel>("api/survey/savechoice", model);
         if (response.IsSuccessStatusCode)
         {
             checkedNationaliti = await response.Content.ReadFromJsonAsync<Nationality>();

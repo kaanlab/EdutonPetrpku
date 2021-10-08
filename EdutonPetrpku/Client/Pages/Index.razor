@@ -19,7 +19,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        sitePage = await httpClient.GetFromJsonAsync<SitePage>($"/api/sitepage/main");
+        sitePage = await httpClient.GetFromJsonAsync<SitePage>("api/sitepage/main");
 
     }
 }

@@ -21,7 +21,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        sitePage = await httpClient.GetFromJsonAsync<SitePage>($"/api/sitepage/{Url}");
+        sitePage = await httpClient.GetFromJsonAsync<SitePage>($"api/sitepage/{Url}");
 
     }
 }

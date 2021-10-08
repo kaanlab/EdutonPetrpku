@@ -24,6 +24,11 @@ namespace EdutonPetrpku.Server.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoginResult>> Login(LoginModel loginModel)
         {
+            if(string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
+            {
+                return BadRequest();
+            }
+
             var user = await _userManager.FindByNameAsync(loginModel.Login);
             if (user == null)
             {

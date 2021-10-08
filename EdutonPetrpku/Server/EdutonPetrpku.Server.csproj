@@ -14,13 +14,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="upload\ckeditor\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\EdutonPetrpku.Data\EdutonPetrpku.Data.csproj" />
     <ProjectReference Include="..\Client\EdutonPetrpku.Client.csproj" />
     <ProjectReference Include="..\Shared\EdutonPetrpku.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="upload\ckeditor\" />
+    <None Update="upload\ckeditor\1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="upload\empty.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 
