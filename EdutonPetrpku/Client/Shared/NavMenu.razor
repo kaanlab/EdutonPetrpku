@@ -1,33 +1,45 @@
 ﻿@inject IAppVersionService AppVersionService
 @inject HttpClient httpClient
 <!-- Sidebar -->
-<div id="sidebar">
+<div id="sidebar" class="@inactiveCss">
 
     <div class="inner">
 
         <!-- Search Box -->
         <section id="search" class="alt">
-            <form method="get" action="#">
-                <input type="text" name="search" id="search" placeholder="Search..." />
-            </form>
+            <AuthorizeView>
+                <MudAvatar Image="@context.User.Claims.FirstOrDefault(u => u.Type == "website")?.Value" />
+                <MudChip Color="Color.Dark">
+                    @context.User.Claims.FirstOrDefault(u => u.Type == "given_name")?.Value
+                </MudChip>
+            </AuthorizeView>
         </section>
 
         <!-- Menu -->
-        @if (sitePages is null)
-        {
-            <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-        }
-        else
-        {
-            <nav id="menu">
-                <ul>
+        <nav id="menu">
+            <ul>
+                @if (sitePages is null)
+                {
+                    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+                }
+                else
+                {
+
                     @foreach (var sitePage in sitePages)
                     {
                         <li><a href="@sitePage.Url">@sitePage.Name</a></li>
                     }
-                </ul>
-            </nav>
-        }
+
+                }
+                <li><a href="pdf">Файлы</a></li>
+                <AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
+                    <li><a href="admin">Панель управления</a></li>
+                </AuthorizeView>
+                <AuthorizeView>
+                    <li><a href="survey">Выбрать тему курса</a></li>
+                </AuthorizeView>
+            </ul>
+        </nav>
 
         <!-- Footer -->
         <footer id="footer">
@@ -38,9 +50,16 @@
         </footer>
 
     </div>
+
+    <a @onclick="Toggle" class="toggle"></a>
+
 </div>
 
 @code {
+
+    bool inactive = true;
+
+    string inactiveCss => inactive ? null : "inactive";
 
     private List<SitePage> sitePages = null;
 
@@ -48,5 +67,10 @@
     {
         sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("api/sitepage/all");
 
+    }
+
+    void Toggle()
+    {
+        inactive = !inactive;
     }
 }
