@@ -1,21 +1,44 @@
-﻿@inject HttpClient httpClient
+﻿@inject IAppVersionService AppVersionService
+@inject HttpClient httpClient
+<!-- Sidebar -->
+<div id="sidebar">
 
-<MudNavMenu>
-    <MudText Typo="Typo.h6" Class="px-4">Эдутон 2021</MudText>
-    <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Петрозаводское ПКУ</MudText>
-    <MudDivider Class="my-2" />
-    @if (sitePages is null)
-    {
-        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-    }
-    else
-    {
-        @foreach (var sitePage in sitePages)
+    <div class="inner">
+
+        <!-- Search Box -->
+        <section id="search" class="alt">
+            <form method="get" action="#">
+                <input type="text" name="search" id="search" placeholder="Search..." />
+            </form>
+        </section>
+
+        <!-- Menu -->
+        @if (sitePages is null)
         {
-            <MudNavLink Href="@($"/sitepage/{sitePage.Url}")">@sitePage.Name</MudNavLink>
+            <MudProgressCircular Indeterminate="true"></MudProgressCircular>
         }
-    }
-</MudNavMenu>
+        else
+        {
+            <nav id="menu">
+                <ul>
+                    @foreach (var sitePage in sitePages)
+                    {
+                        <li><a href="@sitePage.Url">@sitePage.Name</a></li>
+                    }
+                </ul>
+            </nav>
+        }
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright">
+                Лаборатория ИОТ &copy; 2021
+                <br> v @AppVersionService.Version
+            </p>
+        </footer>
+
+    </div>
+</div>
 
 @code {
 
@@ -23,7 +46,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("/api/sitepage/all");
+        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("api/sitepage/all");
 
     }
 }
