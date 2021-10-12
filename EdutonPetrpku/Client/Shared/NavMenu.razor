@@ -1,29 +1,76 @@
-﻿@inject HttpClient httpClient
+﻿@inject IAppVersionService AppVersionService
+@inject HttpClient httpClient
+<!-- Sidebar -->
+<div id="sidebar" class="@inactiveCss">
 
-<MudNavMenu>
-    <MudText Typo="Typo.h6" Class="px-4">Эдутон 2021</MudText>
-    <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Петрозаводское ПКУ</MudText>
-    <MudDivider Class="my-2" />
-    @if (sitePages is null)
-    {
-        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-    }
-    else
-    {
-        @foreach (var sitePage in sitePages)
-        {
-            <MudNavLink Href="@($"/sitepage/{sitePage.Url}")">@sitePage.Name</MudNavLink>
-        }
-    }
-</MudNavMenu>
+    <div class="inner">
+
+        <!-- Search Box -->
+        <section id="search" class="alt">
+            <AuthorizeView>
+                <MudAvatar Image="@context.User.Claims.FirstOrDefault(u => u.Type == "website")?.Value" />
+                <MudChip Color="Color.Dark">
+                    @context.User.Claims.FirstOrDefault(u => u.Type == "given_name")?.Value
+                </MudChip>
+            </AuthorizeView>
+        </section>
+
+        <!-- Menu -->
+        <nav id="menu">
+            <ul>
+                @if (sitePages is null)
+                {
+                    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+                }
+                else
+                {
+
+                    @foreach (var sitePage in sitePages)
+                    {
+                        <li><a href="@sitePage.Url">@sitePage.Name</a></li>
+                    }
+
+                }
+                <li><a href="pdf">Файлы</a></li>
+                <AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
+                    <li><a href="admin">Панель управления</a></li>
+                </AuthorizeView>
+                <AuthorizeView>
+                    <li><a href="survey">Выбрать тему курса</a></li>
+                </AuthorizeView>
+            </ul>
+        </nav>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright">
+                Лаборатория ИОТ &copy; 2021
+                <br> v @AppVersionService.Version
+            </p>
+        </footer>
+
+    </div>
+
+    <a @onclick="Toggle" class="toggle"></a>
+
+</div>
 
 @code {
+
+    bool inactive = true;
+
+    string inactiveCss => inactive ? null : "inactive";
 
     private List<SitePage> sitePages = null;
 
     protected override async Task OnInitializedAsync()
     {
-        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("/api/sitepage/all");
+        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("api/sitepage/all");
 
+    }
+
+    void Toggle()
+    {
+        inactive = !inactive;
     }
 }

@@ -4,9 +4,30 @@
 
 @if (sitePage is not null)
 {
+    <!-- Page Heading -->
+    <div class="page-heading">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@sitePage.Name</h1>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    @((MarkupString)sitePage.Content)
-
+    <!-- Simple Post -->
+    <section class="simple-post">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <img src="assets/images/simple-post.jpg" alt="">
+                    <div class="down-content">
+                        @((MarkupString)sitePage.Content)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>  
 }
 else
 {

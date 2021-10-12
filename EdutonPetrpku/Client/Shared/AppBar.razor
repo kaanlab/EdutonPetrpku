@@ -1,48 +1,19 @@
-﻿@inject HttpClient httpClient
+﻿<!-- Header -->
+<header id="header">
+    <div class="logo">
+        <a> Эдутон 2021</a>
+    </div>
+    <div>
+       <AuthorizeView>
+           <Authorized>
+                <MudIconButton Icon="@Icons.Material.Outlined.Logout" Color="Color.Inherit" Link="/logout" />
+            </Authorized>
+            <NotAuthorized>
+                <MudIconButton Icon="@Icons.Material.Outlined.Login" Color="Color.Inherit" Link="/login" />
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</header>
 
 
-<MudAppBar Color="Color.Primary" Fixed="true">
-    <MudMenu Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit">
-        @if (sitePages is null)
-        {
-        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-        }
-        else
-        {
-            @foreach (var sitePage in sitePages)
-            {
-                <MudMenuItem Link="@sitePage.Url">@sitePage.Name</MudMenuItem>
-            }
-        }
-    </MudMenu>
-    <MudSpacer />
-    <AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
-        <MudIconButton Icon="@Icons.Material.Outlined.AdminPanelSettings" Color="Color.Inherit" Link="/admin" />
-    </AuthorizeView>
-    <AuthorizeView>
-        <Authorized>
-            <MudAvatar Image="@context.User.Claims.FirstOrDefault(u => u.Type == "website")?.Value" />
-            <MudChip Color="Color.Dark">
-                @context.User.Claims.FirstOrDefault(u => u.Type == "given_name")?.Value
-            </MudChip>
-            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
-            <MudButton StartIcon="@Icons.Material.Outlined.Error" Variant="Variant.Filled" Color="Color.Secondary" Link="/survey">Выбрать тему курса</MudButton>
-            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Logout" Color="Color.Inherit" Link="/logout" />
-        </Authorized>
-        <NotAuthorized>
-            <MudIconButton Icon="@Icons.Material.Outlined.Login" Color="Color.Inherit" Link="/login" />
-        </NotAuthorized>
-    </AuthorizeView>
-</MudAppBar>
 
-@code {
-
-    private List<SitePage> sitePages = null;
-
-    protected override async Task OnInitializedAsync()
-    {
-        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("api/sitepage/all");
-
-    }
-}

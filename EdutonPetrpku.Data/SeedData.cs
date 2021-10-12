@@ -35,26 +35,26 @@ namespace EdutonPetrpku.Data
                 await _userManager.CreateAsync(admin, "1Password!");
                 await _userManager.AddToRoleAsync(admin, GlobalVarables.Roles.ADMIN);
 
-                //var user = new AppUser { DisplayName = "Петрозаводское ПКУ", UserName = "petrpku", Email = "petrpku@mil.ru", Image = @"/img/1.jpg" };
-                //await _userManager.CreateAsync(user, "1Password!");
-                //await _userManager.AddToRoleAsync(user, GlobalVarables.Roles.USER);
+                var user = new AppUser { DisplayName = "Петрозаводское ПКУ", UserName = "petrpku", Email = "petrpku@mil.ru", Image = @"/img/1.jpg" };
+                await _userManager.CreateAsync(user, "1Password!");
+                await _userManager.AddToRoleAsync(user, GlobalVarables.Roles.USER);
             }
         }
 
-        //public async Task AddData()
-        //{
-        //    if (!_context.Nationalities.Any())
-        //    {
-        //        var nationalities = new List<Nationality>()
-        //        {
-        //            new Nationality() { Name = "Абазины", Subject = "Карачаево-Черкесская Республика", Population = 43341},
-        //            new Nationality() { Name = "Алеуты", Subject = "Камчатский край", Population = 482},
-        //            new Nationality() { Name = "Алюторцы", Subject = "Камчатский край", Population = 43341}
-        //        };
+        public async Task AddData()
+        {
+            if (!_context.Nationalities.Any())
+            {
+                var nationalities = new List<Nationality>()
+                {
+                    new Nationality() { Name = "Абазины", Subject = "Карачаево-Черкесская Республика", Population = 43341},
+                    new Nationality() { Name = "Алеуты", Subject = "Камчатский край", Population = 482},
+                    new Nationality() { Name = "Алюторцы", Subject = "Камчатский край", Population = 43341}
+                };
 
-        //        await _context.Nationalities.AddRangeAsync(nationalities);
-        //        await _context.SaveChangesAsync();
-        //    }
-        //}
+                await _context.Nationalities.AddRangeAsync(nationalities);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

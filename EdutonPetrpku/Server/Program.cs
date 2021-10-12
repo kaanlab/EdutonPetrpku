@@ -37,7 +37,7 @@ namespace EdutonPetrpku.Server
             {
                 var service = scope.ServiceProvider.GetService<SeedData>();
                 await service.AddUsers();
-                //await service.AddData();
+                await service.AddData();
             }
         }
     }
