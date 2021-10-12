@@ -32,7 +32,10 @@ a, .btn-link {
     color: red;
 }
 
-
+#given-name-logo {
+    color: white;
+    padding: 2rem;
+}
 
 #blazor-error-ui {
     background: lightyellow;
@@ -52,3 +55,5 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+
