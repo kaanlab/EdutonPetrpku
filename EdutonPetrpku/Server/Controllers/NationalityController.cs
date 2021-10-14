@@ -1,5 +1,6 @@
 ﻿using EdutonPetrpku.Data;
 using EdutonPetrpku.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,8 @@ namespace EdutonPetrpku.Server.Controllers
         public async Task<ActionResult<Nationality[]>> All() =>
             await _context.Nationalities.Include(u => u.AppUser).ToArrayAsync();
 
+        
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("add")]
         public async Task<ActionResult<Nationality>> Add(Nationality nationality)
         {
@@ -40,6 +43,8 @@ namespace EdutonPetrpku.Server.Controllers
             }
         }
 
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPut("update")]
         public async Task<ActionResult<Nationality>> Update(Nationality nationality)
         {
@@ -62,12 +67,14 @@ namespace EdutonPetrpku.Server.Controllers
             }
         }
 
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpDelete("delete/{nationalityId}")]
         public async Task<ActionResult> Delete(string nationalityId)
         {
             var nationalityToDelete = await _context.Nationalities.FirstOrDefaultAsync(n => n.Id == int.Parse(nationalityId));
 
-            var deletedNationality = _context.Nationalities.Remove(nationalityToDelete);
+            _context.Nationalities.Remove(nationalityToDelete);
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {

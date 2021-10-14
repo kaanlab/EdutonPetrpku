@@ -1,5 +1,6 @@
 ﻿using EdutonPetrpku.Data;
 using EdutonPetrpku.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,7 @@ namespace EdutonPetrpku.Server.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Roles = GlobalVarables.Roles.USER)]
         [HttpPost("savechoice")]
         public async Task<ActionResult<Nationality>> SaveChoice(SurveyModel surveyModel)
         {

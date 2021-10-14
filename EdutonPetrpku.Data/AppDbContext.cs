@@ -16,5 +16,7 @@ namespace EdutonPetrpku.Data
         public DbSet<Nationality> Nationalities { get; set; }
 
         public DbSet<SitePage> SitePages { get; set; }
+
+        public DbSet<Article> Articles { get; set; }
     }
 }

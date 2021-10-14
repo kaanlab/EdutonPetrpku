@@ -1,5 +1,6 @@
 ﻿using EdutonPetrpku.Data;
 using EdutonPetrpku.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace EdutonPetrpku.Server.Controllers
             _context = context;
         }
 
+
         [HttpGet("all")]
         public async Task<ActionResult<SitePage[]>> All()
         {
@@ -34,6 +36,7 @@ namespace EdutonPetrpku.Server.Controllers
                 return Ok(Enumerable.Empty<SitePage>().ToArray());
             }
         }
+
 
         [HttpGet("main")]
         public async Task<ActionResult<SitePage>> GetMainPage()
@@ -49,11 +52,13 @@ namespace EdutonPetrpku.Server.Controllers
             }
         }
 
+
         [HttpGet("{url}")]
         public async Task<ActionResult<SitePage>> GetPage(string url) =>        
             await _context.SitePages.FirstOrDefaultAsync(p => p.Url == url);
-        
 
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("add")]
         public async Task<ActionResult<Nationality>> Add(SitePage sitePage)
         {
@@ -69,6 +74,8 @@ namespace EdutonPetrpku.Server.Controllers
             }
         }
 
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPut("update")]
         public async Task<ActionResult<SitePage>> Update(SitePage sitePage)
         {
@@ -92,12 +99,14 @@ namespace EdutonPetrpku.Server.Controllers
             }
         }
 
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpDelete("delete/{sitePageId}")]
         public async Task<ActionResult> Delete(string sitePageId)
         {
             var sitePageToDelete = await _context.SitePages.FirstOrDefaultAsync(n => n.Id == int.Parse(sitePageId));
 
-            var deletedNationality = _context.SitePages.Remove(sitePageToDelete);
+            _context.SitePages.Remove(sitePageToDelete);
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {
