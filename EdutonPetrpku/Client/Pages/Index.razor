@@ -3,63 +3,96 @@
 @inject HttpClient httpClient
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
-
-<AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
-    <MudIconButton Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Size="Size.Large" @onclick="AddArticle" Class="mr-3" />
-</AuthorizeView>
+<!-- Page Heading -->
+<div class="page-heading">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Новости</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
+        <MudIconButton Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Size="Size.Large" @onclick="AddArticle" Class="mr-3" />
+    </AuthorizeView>
+</div>
 
 @if (articles is not null)
 {
-    foreach (var article in articles)
+
+
+    @if (articles.Count > 0)
     {
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">@article.Title</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" @onclick="(e) => UpdateArticle(article)" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Default" @onclick="(e) => DeleteArticle(article)" />
-                    </AuthorizeView>
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>@article.Content</MudText>
-                <MudText Typo="Typo.caption">Опубликовано: @article.PublishDate</MudText>
-                @if (article.UpdateDate.HasValue)
-                {
-                    <MudText Typo="Typo.caption">
-                        Обновлено: @article.UpdateDate.Value.ToShortDateString()
-                    </MudText>
-                }
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary">Read More</MudButton>
-            </MudCardActions>
-        </MudCard>
+        foreach (var article in articles)
+        {
+            <!-- Article -->
+            <section class="simple-post">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="ml-auto">
+                            <AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" @onclick="(e) => UpdateArticle(article)" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Default" @onclick="(e) => DeleteArticle(article)" />
+                            </AuthorizeView>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="down-content">
+                                    <h3>@article.Title</h3>
+                                    @((MarkupString)article.Content)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="ml-auto">
+                                <p class="font-monospace">@article.AppUser.DisplayName</p>
+                                <p class="text-muted">Опубликовано: @article.PublishDate</p>
+                                @if (article.UpdateDate.HasValue)
+                                {
+                                    <p class="text-muted">Обновлено: @article.UpdateDate.Value</p>
+                                }
+                                </div>
+                            </div>
+                        </div>
+            </section>
+
+        }
+
     }
+    else
+    {
+        <div class="col-md-4">
+            <MudAlert Severity="Severity.Normal">новостей нет...</MudAlert>
+        </div>
+    }
+
+
 }
 else
 {
     <MudProgressCircular Indeterminate="true"></MudProgressCircular>
 }
 
+
+
 @code {
 
     List<Article> articles;
+    DialogOptions fullScreen = new DialogOptions() { FullScreen = true, CloseButton = true };
+
 
     protected override async Task OnInitializedAsync()
     {
         articles = await httpClient.GetFromJsonAsync<List<Article>>("api/article/all");
-
     }
 
     private async Task AddArticle()
     {
-        var dialog = DialogService.Show<ArticleAddOrUpdateDialog>("Добавление новости");
+        var dialog = DialogService.Show<ArticleAddOrUpdateDialog>("Добавление новости", fullScreen);
         var result = await dialog.Result;
-        //TODO: Add AppUser on the client side
 
         if (!result.Cancelled)
         {
@@ -81,7 +114,7 @@ else
     {
         var parameters = new DialogParameters { ["article"] = article };
 
-        var dialog = DialogService.Show<ArticleAddOrUpdateDialog>("Обновить новость", parameters);
+        var dialog = DialogService.Show<ArticleAddOrUpdateDialog>("Обновить новость", parameters, fullScreen);
         var result = await dialog.Result;
         if (!result.Cancelled)
         {

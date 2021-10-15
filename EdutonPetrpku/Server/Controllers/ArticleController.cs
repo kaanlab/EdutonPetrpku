@@ -2,6 +2,7 @@
 using EdutonPetrpku.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,23 +17,25 @@ namespace EdutonPetrpku.Server.Controllers
     public class ArticleController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ArticleController(AppDbContext context)
+        public ArticleController(AppDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<Article[]>> All()
+        public async Task<ActionResult<List<Article>>> All()
         {
-            var articles = await _context.SitePages.OrderBy(o => o.Order).ToArrayAsync();
+            var articles = await _context.Articles.Include(u => u.AppUser).ToListAsync();
             if (articles is not null)
             {
                 return Ok(articles);
             }
             else
             {
-                return Ok(Enumerable.Empty<SitePage>().ToArray());
+                return Ok(Enumerable.Empty<Article>().ToArray());
             }
         }
 
@@ -41,18 +44,20 @@ namespace EdutonPetrpku.Server.Controllers
         [HttpPost("add")]
         public async Task<ActionResult<Article>> Add(Article article)
         {
-            article.PublishDate = DateTime.Now;
             //TODO: add AppUser on the server side
-            var newArticle = await _context.Articles.AddAsync(article);
-            var result = await _context.SaveChangesAsync();
-            if (result > 0)
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (user.Id == article.AppUserId)
             {
-                return Ok(newArticle.Entity);
+                article.PublishDate = DateTime.Now;
+                var newArticle = await _context.Articles.AddAsync(article);
+                var result = await _context.SaveChangesAsync();
+                if (result > 0)
+                {
+                    return Ok(newArticle.Entity);
+                }
             }
-            else
-            {
-                return BadRequest();
-            }
+
+            return BadRequest();
         }
 
 
@@ -60,31 +65,33 @@ namespace EdutonPetrpku.Server.Controllers
         [HttpPut("update")]
         public async Task<ActionResult<Article>> Update(Article article)
         {
-            var articleToUpdate = await _context.Articles.FirstOrDefaultAsync(a => a.Id == article.Id);
-
-            articleToUpdate.Title = article.Title;
-            articleToUpdate.Content = article.Content;
-            articleToUpdate.UpdateDate = DateTime.Now;
-
-            var updatedArticle = _context.Articles.Update(articleToUpdate);
-
-            var result = await _context.SaveChangesAsync();
-            if (result > 0)
+            var articleToUpdate = await _context.Articles.FindAsync(article.Id);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (user.Id == article.AppUserId)
             {
-                return Ok(updatedArticle.Entity);
+                articleToUpdate.Title = article.Title;
+                articleToUpdate.Content = article.Content;
+                articleToUpdate.UpdateDate = DateTime.Now;
+
+                var updatedArticle = _context.Articles.Update(articleToUpdate);
+
+                var result = await _context.SaveChangesAsync();
+                if (result > 0)
+                {
+                    return Ok(updatedArticle.Entity);
+                }
             }
-            else
-            {
-                return BadRequest();
-            }
+
+            return BadRequest();
+
         }
 
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
-        [HttpDelete("delete/{int:articleId}")]
-        public async Task<ActionResult> Delete(int articleId)
+        [HttpDelete("delete/{id}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            var articleToDelete = await _context.Articles.FirstOrDefaultAsync(a => a.Id == articleId);
+            var articleToDelete = await _context.Articles.FindAsync(id);
 
             _context.Articles.Remove(articleToDelete);
             var result = await _context.SaveChangesAsync();

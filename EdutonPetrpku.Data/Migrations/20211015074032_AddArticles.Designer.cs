@@ -4,14 +4,16 @@ using EdutonPetrpku.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EdutonPetrpku.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211015074032_AddArticles")]
+    partial class AddArticles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,7 +144,9 @@ namespace EdutonPetrpku.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("AppUserId")
+                        .IsUnique()
+                        .HasFilter("[AppUserId] IS NOT NULL");
 
                     b.ToTable("Nationalities");
                 });
@@ -314,8 +318,8 @@ namespace EdutonPetrpku.Data.Migrations
             modelBuilder.Entity("EdutonPetrpku.Shared.Nationality", b =>
                 {
                     b.HasOne("EdutonPetrpku.Shared.AppUser", "AppUser")
-                        .WithMany()
-                        .HasForeignKey("AppUserId");
+                        .WithOne("Nationality")
+                        .HasForeignKey("EdutonPetrpku.Shared.Nationality", "AppUserId");
 
                     b.Navigation("AppUser");
                 });
@@ -369,6 +373,11 @@ namespace EdutonPetrpku.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EdutonPetrpku.Shared.AppUser", b =>
+                {
+                    b.Navigation("Nationality");
                 });
 #pragma warning restore 612, 618
         }

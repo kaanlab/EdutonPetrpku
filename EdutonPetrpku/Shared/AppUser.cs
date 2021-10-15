@@ -13,7 +13,9 @@ namespace EdutonPetrpku.Shared
         public string Image { get; set; }
 
         // relationship
-        public Nationality Nationality { get; set; }
+        //public Nationality Nationality { get; set; }
+
+        //public List<Article> Articles { get; set; }
 
     }
 }

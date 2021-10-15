@@ -1,9 +1,5 @@
 ﻿@page "/survey"
 
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
-@using System.Security.Claims
-
 @inject HttpClient httpClient
 
 @attribute [Authorize(Roles = GlobalVarables.Roles.USER)]

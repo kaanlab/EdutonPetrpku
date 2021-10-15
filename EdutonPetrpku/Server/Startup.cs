@@ -35,9 +35,14 @@ namespace EdutonPetrpku.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
-        {            
-            services.AddControllersWithViews().AddJsonOptions(options => 
-                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+        {
+            services.AddControllersWithViews();
+                //.AddJsonOptions(options =>
+           // {
+            //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+           //     options.JsonSerializerOptions.WriteIndented = true;
+           // });
+
             services.AddRazorPages();
 
             services.AddDbContext<AppDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("SqlConnection")));
@@ -47,7 +52,7 @@ namespace EdutonPetrpku.Server
 
             services.AddScoped<IJwtService, JwtService>();
             services.AddAuthentication(o =>
-            {                
+            {
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(o =>

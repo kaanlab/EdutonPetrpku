@@ -7,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+
 
 namespace EdutonPetrpku.Server.Controllers
 {
@@ -23,10 +25,10 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<Nationality[]>> All() =>
-            await _context.Nationalities.Include(u => u.AppUser).ToArrayAsync();
+        public async Task<ActionResult<List<Nationality>>> All() =>
+             await _context.Nationalities.Include(u => u.AppUser).ToListAsync();
 
-        
+
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("add")]
         public async Task<ActionResult<Nationality>> Add(Nationality nationality)
@@ -69,10 +71,10 @@ namespace EdutonPetrpku.Server.Controllers
 
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
-        [HttpDelete("delete/{nationalityId}")]
-        public async Task<ActionResult> Delete(string nationalityId)
+        [HttpDelete("delete/{id}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            var nationalityToDelete = await _context.Nationalities.FirstOrDefaultAsync(n => n.Id == int.Parse(nationalityId));
+            var nationalityToDelete = await _context.Nationalities.FindAsync(id);
 
             _context.Nationalities.Remove(nationalityToDelete);
             var result = await _context.SaveChangesAsync();

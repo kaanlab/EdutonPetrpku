@@ -5,8 +5,9 @@
         <EditForm EditContext="@editContext">
             <DataAnnotationsValidator />
 
-            <MudTextField Label="Народ" Class="mt-3" Lines="2"
+            <MudTextField Label="Название" Class="mt-3" Lines="2"
                           @bind-Value="Article.Title" For="@(() => Article.Title)" />
+            <MudText Typo="Typo.body2" Class="my-4">Содержание</MudText>
             <MudContainer Style="max-height: 600px; overflow-y: scroll">
                 <CKEditor Id="MyEditor1"
                           @bind-Value="Article.Content"
@@ -24,6 +25,9 @@
 @code {
 
     [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    [CascadingParameter]
     MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
@@ -32,10 +36,14 @@
     string uploadUrl;
     private bool formInvalid = true;
     private EditContext editContext;
+    private string authUserId;
 
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        var authUser = (await authenticationState).User;
+        authUserId = authUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid).Value;
+
         editContext = new EditContext(Article);
         editContext.OnFieldChanged += HandleFieldChanged;
 
@@ -50,7 +58,11 @@
     }
 
 
-    void AddOrUpdate() => MudDialog.Close(DialogResult.Ok(Article));
+    void AddOrUpdate()
+    {
+        Article.AppUserId = authUserId;
+        MudDialog.Close(DialogResult.Ok(Article));
+    }
 
     void Cancel() => MudDialog.Cancel();
 }

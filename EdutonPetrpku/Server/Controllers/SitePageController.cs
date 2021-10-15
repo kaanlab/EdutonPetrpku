@@ -38,21 +38,6 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
 
-        [HttpGet("main")]
-        public async Task<ActionResult<SitePage>> GetMainPage()
-        {            
-           var main = await _context.SitePages.FirstOrDefaultAsync(p => p.Order == 1);
-            if(main is not null)
-            {
-                return Ok(main);
-            }
-            else
-            {
-                return Ok(new SitePage());
-            }
-        }
-
-
         [HttpGet("{url}")]
         public async Task<ActionResult<SitePage>> GetPage(string url) =>        
             await _context.SitePages.FirstOrDefaultAsync(p => p.Url == url);
@@ -101,10 +86,10 @@ namespace EdutonPetrpku.Server.Controllers
 
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
-        [HttpDelete("delete/{sitePageId}")]
-        public async Task<ActionResult> Delete(string sitePageId)
+        [HttpDelete("delete/{id}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            var sitePageToDelete = await _context.SitePages.FirstOrDefaultAsync(n => n.Id == int.Parse(sitePageId));
+            var sitePageToDelete = await _context.SitePages.FindAsync(id);
 
             _context.SitePages.Remove(sitePageToDelete);
             var result = await _context.SaveChangesAsync();
