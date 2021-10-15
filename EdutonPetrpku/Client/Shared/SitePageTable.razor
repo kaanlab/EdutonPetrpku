@@ -32,7 +32,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("/api/sitepage/all");
+        sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("api/sitepage/all");
     }
 
     private async Task AddSitePage()
@@ -42,7 +42,7 @@
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PostAsJsonAsync<SitePage>("/api/sitepage/add", result.Data as SitePage);
+            var response = await httpClient.PostAsJsonAsync<SitePage>("api/sitepage/add", result.Data as SitePage);
             if (response.IsSuccessStatusCode)
             {
                 var addedSitePage = await response.Content.ReadFromJsonAsync<SitePage>();
@@ -65,7 +65,7 @@
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PutAsJsonAsync<SitePage>("/api/sitepage/update", result.Data as SitePage);
+            var response = await httpClient.PutAsJsonAsync<SitePage>("api/sitepage/update", result.Data as SitePage);
             if (response.IsSuccessStatusCode)
             {
                 var updatedSitePage = await response.Content.ReadFromJsonAsync<SitePage>();
@@ -91,7 +91,7 @@
         if (!result.Cancelled)
         {
             var sitePageToDelete = result.Data as SitePage;
-            var response = await httpClient.DeleteAsync($"/api/sitepage/delete/{sitePageToDelete.Id}");
+            var response = await httpClient.DeleteAsync($"api/sitepage/delete/{sitePageToDelete.Id}");
             if (response.IsSuccessStatusCode)
             {
                 sitePages.Remove(sitePageToDelete);

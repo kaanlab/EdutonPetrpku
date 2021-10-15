@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+
+<MudDialog>
+    <DialogContent>
+        <EditForm EditContext="@editContext">
+            <DataAnnotationsValidator />
+
+            <MudTextField Label="Название" Class="mt-3" Lines="2"
+                          @bind-Value="Article.Title" For="@(() => Article.Title)" />
+            <MudText Typo="Typo.body2" Class="my-4">Содержание</MudText>
+            <MudContainer Style="max-height: 600px; overflow-y: scroll">
+                <CKEditor Id="MyEditor1"
+                          @bind-Value="Article.Content"
+                          UrlToPostImage=@uploadUrl>
+                </CKEditor>
+            </MudContainer>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Отменить</MudButton>
+        <MudButton ButtonType="ButtonType.Submit" Color="Color.Info" OnClick="AddOrUpdate" Disabled="@formInvalid">Сохранить</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Article Article { get; set; } = new Article();
+
+    string uploadUrl;
+    private bool formInvalid = true;
+    private EditContext editContext;
+    private string authUserId;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authUser = (await authenticationState).User;
+        authUserId = authUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid).Value;
+
+        editContext = new EditContext(Article);
+        editContext.OnFieldChanged += HandleFieldChanged;
+
+        var builder = WebAssemblyHostBuilder.CreateDefault();
+        uploadUrl = $@"{builder.HostEnvironment.BaseAddress}api/file/upload";
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        formInvalid = !editContext.Validate();
+        StateHasChanged();
+    }
+
+
+    void AddOrUpdate()
+    {
+        Article.AppUserId = authUserId;
+        MudDialog.Close(DialogResult.Ok(Article));
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

@@ -26,8 +26,8 @@ namespace EdutonPetrpku.Server.Controllers
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpGet("all")]
-        public async Task<ActionResult<AppUser[]>> All() =>
-            await _userManager.Users.ToArrayAsync();
+        public async Task<ActionResult<List<AppUser>>> All() =>
+            await _userManager.Users.ToListAsync();
 
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]

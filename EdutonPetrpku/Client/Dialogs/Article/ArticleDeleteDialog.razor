@@ -1,0 +1,21 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudText>@Article.Title</MudText>
+        <div>@((MarkupString)Article.Content)</div>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Отменить</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="Delete">Удалить</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public Article Article { get; set; }
+
+    void Delete() => MudDialog.Close(DialogResult.Ok(Article));
+    void Cancel() => MudDialog.Cancel();
+}

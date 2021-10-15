@@ -2,32 +2,41 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<MudTable Items="@nationalities" Hover="true" Class="my-5">
-    <ToolBarContent>
-        <MudIconButton Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Size="Size.Large" @onclick="AddNationality" Class="mr-3" />
-        <MudText Typo="Typo.h6">Коренные малочисленые народы</MudText>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh>Народ</MudTh>
-        <MudTh>Субъект</MudTh>
-        <MudTh>Численность</MudTh>
-        <MudTh>Название ДОО</MudTh>
-        <MudTh></MudTh>
-        <MudTh></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Народ">@context.Name</MudTd>
-        <MudTd DataLabel="Субъект">@context.Subject</MudTd>
-        <MudTd DataLabel="Численность">@context.Population</MudTd>
-        <MudTd DataLabel="Название ДОО">@context.AppUser?.DisplayName</MudTd>
-        <MudTd><MudButton Color="Color.Info" @onclick="@((e) => UpdateNationality(context))">Изменить</MudButton></MudTd>
-        <MudTd><MudButton Color="Color.Error" @onclick="@((e) => DeleteNationality(context))">Удалить</MudButton></MudTd>
-    </RowTemplate>
-</MudTable>
+@if (nationalities is not null)
+{
+
+    <MudTable Items="@nationalities" Hover="true" Class="my-5">
+        <ToolBarContent>
+            <MudIconButton Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Size="Size.Large" @onclick="AddNationality" Class="mr-3" />
+            <MudText Typo="Typo.h6">Коренные малочисленые народы</MudText>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Народ</MudTh>
+            <MudTh>Субъект</MudTh>
+            <MudTh>Численность</MudTh>
+            <MudTh>Название ДОО</MudTh>
+            <MudTh></MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Народ">@context.Name</MudTd>
+            <MudTd DataLabel="Субъект">@context.Subject</MudTd>
+            <MudTd DataLabel="Численность">@context.Population</MudTd>
+            <MudTd DataLabel="Название ДОО">@context.AppUser?.DisplayName</MudTd>
+            <MudTd><MudButton Color="Color.Info" @onclick="@((e) => UpdateNationality(context))">Изменить</MudButton></MudTd>
+            <MudTd><MudButton Color="Color.Error" @onclick="@((e) => DeleteNationality(context))">Удалить</MudButton></MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+}
+
 
 
 @code {
-    private List<Nationality> nationalities = null;
+    private List<Nationality> nationalities;
 
     protected override async Task OnInitializedAsync()
     {
