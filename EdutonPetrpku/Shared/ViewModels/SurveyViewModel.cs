@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EdutonPetrpku.Shared
 {
-    public class SurveyModel
+    public class SurveyViewModel
     {
         [Required]
         public int NationalityId { get; set; }

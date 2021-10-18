@@ -45,7 +45,7 @@
     MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public AppUserUpdateModel Context { get; set; } = new AppUserUpdateModel();
+    public AppUserUpdateViewModel Context { get; set; } = new AppUserUpdateViewModel();
 
     private string password;
     private string confirmPassword;
@@ -100,7 +100,7 @@
 
                 using var responseStream = await response.Content.ReadAsStreamAsync();
 
-                var newUploadResult = await JsonSerializer.DeserializeAsync<UploadFileModel>(responseStream, options);
+                var newUploadResult = await JsonSerializer.DeserializeAsync<UploadFileViewModel>(responseStream, options);
                 Context.Image = newUploadResult.Url;
             }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EdutonPetrpku.Shared
 {
-    public class AppUserChPassModel
+    public class AppUserChPassViewModel
     {
         public string DisplayName { get; set; }
         public string UserName { get; set; }

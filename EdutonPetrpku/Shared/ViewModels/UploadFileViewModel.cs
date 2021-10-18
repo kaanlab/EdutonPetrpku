@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdutonPetrpku.Shared
 {
-    public class UploadFileModel
+    public class UploadFileViewModel
     {
         public string Url { get; set; }
     }

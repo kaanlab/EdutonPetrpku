@@ -24,15 +24,33 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
 
-        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        [HttpGet("summary")]
+        public async Task<IEnumerable<AppUserSummaryViewModel>> Summary()
+        {
+            List<AppUserSummaryViewModel> appUsersSummary = new List<AppUserSummaryViewModel>();
+            var allUsersExpectAdmin = await _userManager.Users.Where(u => u.UserName != "siteadmin").Include(n => n.Nationality).ToListAsync();
+            foreach (var user in allUsersExpectAdmin)
+            {
+                var appUserSummary = new AppUserSummaryViewModel();
+                appUserSummary.AppUserDisplayName = user.DisplayName;
+                appUserSummary.NationalityName = (user.Nationality is not null) ? user.Nationality.Name : "выбор не сделан";
+                appUserSummary.IsSelected = user.Nationality is not null;
+
+                appUsersSummary.Add(appUserSummary);
+            }
+
+            return appUsersSummary;
+        }
+
+        //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpGet("all")]
-        public async Task<ActionResult<List<AppUser>>> All() =>
-            await _userManager.Users.ToListAsync();
+        public async Task<IEnumerable<AppUserViewModel>> All() =>
+           await _userManager.Users.Select(u => u.ToAppUserViewModel()).ToListAsync();
 
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("add")]
-        public async Task<ActionResult<AppUser>> Add(AppUserModel userModel)
+        public async Task<AppUserViewModel> Add(AppUserCreateViewModel userModel)
         {
             var appUser = new AppUser
             {
@@ -44,13 +62,13 @@ namespace EdutonPetrpku.Server.Controllers
             await _userManager.CreateAsync(appUser, userModel.Password);
             await _userManager.AddToRoleAsync(appUser, GlobalVarables.Roles.USER);
 
-            return Ok(appUser);
+            return appUser.ToAppUserViewModel();
         }
 
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPut("update")]
-        public async Task<ActionResult<AppUser>> Update(AppUserUpdateModel userModel)
+        public async Task<AppUserViewModel> Update(AppUserUpdateViewModel userModel)
         {
             var appUser = await _userManager.FindByNameAsync(userModel.UserName);
 
@@ -61,13 +79,13 @@ namespace EdutonPetrpku.Server.Controllers
 
             await _userManager.UpdateAsync(appUser);
 
-            return Ok(appUser);
+            return appUser.ToAppUserViewModel();
         }
 
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("changepw")]
-        public async Task<ActionResult<AppUser>> ChangePassword(AppUserChPassModel userModel)
+        public async Task<ActionResult<AppUser>> ChangePassword(AppUserChPassViewModel userModel)
         {
             var appUser = await _userManager.FindByNameAsync(userModel.UserName);
 
@@ -82,7 +100,7 @@ namespace EdutonPetrpku.Server.Controllers
 
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
-        [HttpDelete("delete/{usertodelete}")]
+        [HttpDelete("delete/{userToDelete}")]
         public async Task<ActionResult> Delete(string userToDelete)
         {
             if (userToDelete == GlobalVarables.SITE_ADMIN_ACCOUNT)

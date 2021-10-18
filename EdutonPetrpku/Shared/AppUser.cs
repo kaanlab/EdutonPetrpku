@@ -13,9 +13,18 @@ namespace EdutonPetrpku.Shared
         public string Image { get; set; }
 
         // relationship
-        //public Nationality Nationality { get; set; }
+        public Nationality Nationality { get; set; }
 
         //public List<Article> Articles { get; set; }
+
+
+        public AppUserViewModel ToAppUserViewModel() => new AppUserViewModel()
+        {
+            DisplayName = this.DisplayName,
+            Image = this.Image,
+            Email = this.Email,
+            UserName = this.UserName
+        };
 
     }
 }

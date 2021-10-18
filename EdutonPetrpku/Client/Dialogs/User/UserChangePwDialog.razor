@@ -6,7 +6,7 @@
             <MudField Label="Логин" Class="mt-3">@Context.UserName</MudField>
             <MudTextField Label="Действующий пароль" Class="mt-3" InputType="InputType.Password"
                           @bind-Value="Context.CurrentPassword" For="@(() => Context.CurrentPassword)" />
-            <MudTextField Label="новый пароль" Class="mt-3" InputType="InputType.Password"
+            <MudTextField Label="Новый пароль" Class="mt-3" InputType="InputType.Password"
                           @bind-Value="Context.Password" For="@(() => Context.Password)" />
             <MudTextField Label="Повторить ввод нового пароля" Class="mt-3" InputType="InputType.Password"
                           @bind-Value="Context.ConfirmPassword" For="@(() => Context.ConfirmPassword)" />
@@ -24,7 +24,7 @@
     MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public AppUserChPassModel Context { get; set; } = new AppUserChPassModel();
+    public AppUserChPassViewModel Context { get; set; } = new AppUserChPassViewModel();
 
     private bool formInvalid = true;
     private EditContext editContext;

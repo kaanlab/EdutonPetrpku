@@ -22,7 +22,7 @@
             <MudTd DataLabel="Народ">@context.Name</MudTd>
             <MudTd DataLabel="Субъект">@context.Subject</MudTd>
             <MudTd DataLabel="Численность">@context.Population</MudTd>
-            <MudTd DataLabel="Название ДОО">@context.AppUser?.DisplayName</MudTd>
+            <MudTd DataLabel="Название ДОО">@context.AppUserDisplayName</MudTd>
             <MudTd><MudButton Color="Color.Info" @onclick="@((e) => UpdateNationality(context))">Изменить</MudButton></MudTd>
             <MudTd><MudButton Color="Color.Error" @onclick="@((e) => DeleteNationality(context))">Удалить</MudButton></MudTd>
         </RowTemplate>
@@ -36,11 +36,11 @@ else
 
 
 @code {
-    private List<Nationality> nationalities;
+    private List<NationalityViewModel> nationalities;
 
     protected override async Task OnInitializedAsync()
     {
-        nationalities = await httpClient.GetFromJsonAsync<List<Nationality>>("api/nationality/all");
+        nationalities = await httpClient.GetFromJsonAsync<List<NationalityViewModel>>("api/nationality/all");
     }
 
     private async Task AddNationality()
@@ -50,10 +50,10 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PostAsJsonAsync<Nationality>("api/nationality/add", result.Data as Nationality);
+            var response = await httpClient.PostAsJsonAsync<NationalityViewModel>("api/nationality/add", result.Data as NationalityViewModel);
             if (response.IsSuccessStatusCode)
             {
-                var addedNationality = await response.Content.ReadFromJsonAsync<Nationality>();
+                var addedNationality = await response.Content.ReadFromJsonAsync<NationalityViewModel>();
                 nationalities.Add(addedNationality);
                 Snackbar.Add("Коренной народ успешно добавлен!", Severity.Success);
             }
@@ -65,7 +65,7 @@ else
     }
 
 
-    private async Task UpdateNationality(Nationality context)
+    private async Task UpdateNationality(NationalityViewModel context)
     {
         var parameters = new DialogParameters { ["context"] = context };
 
@@ -73,10 +73,10 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PutAsJsonAsync<Nationality>("api/nationality/update", result.Data as Nationality);
+            var response = await httpClient.PutAsJsonAsync<NationalityViewModel>("api/nationality/update", result.Data as NationalityViewModel);
             if (response.IsSuccessStatusCode)
             {
-                var updatedNationality = await response.Content.ReadFromJsonAsync<Nationality>();
+                var updatedNationality = await response.Content.ReadFromJsonAsync<NationalityViewModel>();
                 var index = nationalities.IndexOf(context);
                 nationalities.Remove(context);
                 nationalities.Insert(index, updatedNationality);
@@ -90,7 +90,7 @@ else
     }
 
 
-    private async Task DeleteNationality(Nationality context)
+    private async Task DeleteNationality(NationalityViewModel context)
     {
         var parameters = new DialogParameters { ["context"] = context };
 
@@ -98,7 +98,7 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var nationalityToDelete = result.Data as Nationality;
+            var nationalityToDelete = result.Data as NationalityViewModel;
             var response = await httpClient.DeleteAsync($"api/nationality/delete/{nationalityToDelete.Id}");
             if (response.IsSuccessStatusCode)
             {

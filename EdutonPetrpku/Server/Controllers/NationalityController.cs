@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 
 namespace EdutonPetrpku.Server.Controllers
@@ -25,14 +27,32 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<List<Nationality>>> All() =>
-             await _context.Nationalities.Include(u => u.AppUser).ToListAsync();
+        public async Task<IEnumerable<NationalityViewModel>> All()
+        {
+            var nationalities = await _context.Nationalities.Include(u => u.AppUser).ToListAsync();
 
+            List<NationalityViewModel> nationalityViewModels = new List<NationalityViewModel>();
+
+            foreach (var nationality in nationalities)
+            {
+                nationalityViewModels.Add(nationality.ToNationalityViewModel()); 
+            }
+
+            return nationalityViewModels;
+
+        }
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("add")]
-        public async Task<ActionResult<Nationality>> Add(Nationality nationality)
+        public async Task<ActionResult<Nationality>> Add(NationalityViewModel nationalityViewModel)
         {
+            var nationality = new Nationality()
+            {
+                Name = nationalityViewModel.Name,
+                Population = nationalityViewModel.Population,
+                Subject = nationalityViewModel.Subject
+            };
+            
             var newNationality = await _context.Nationalities.AddAsync(nationality);
             var result = await _context.SaveChangesAsync();
             if (result > 0)
@@ -48,20 +68,22 @@ namespace EdutonPetrpku.Server.Controllers
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPut("update")]
-        public async Task<ActionResult<Nationality>> Update(Nationality nationality)
+        public async Task<ActionResult<NationalityViewModel>> Update(NationalityViewModel nationalityViewModel)
         {
-            var nationalityToUpdate = await _context.Nationalities.FirstOrDefaultAsync(n => n.Id == nationality.Id);
+            var nationalityToUpdate = await _context.Nationalities
+                .Include(u => u.AppUser)
+                .FirstAsync(n => n.Id == nationalityViewModel.Id);
 
-            nationalityToUpdate.Name = nationality.Name;
-            nationalityToUpdate.Subject = nationality.Subject;
-            nationalityToUpdate.Population = nationality.Population;
+            nationalityToUpdate.Name = nationalityViewModel.Name;
+            nationalityToUpdate.Subject = nationalityViewModel.Subject;
+            nationalityToUpdate.Population = nationalityViewModel.Population;
 
             var updatedNationality = _context.Nationalities.Update(nationalityToUpdate);
 
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {
-                return Ok(updatedNationality.Entity);
+                return Ok(updatedNationality.Entity.ToNationalityViewModel());
             }
             else
             {
