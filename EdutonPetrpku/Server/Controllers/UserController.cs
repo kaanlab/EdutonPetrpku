@@ -42,7 +42,7 @@ namespace EdutonPetrpku.Server.Controllers
             return appUsersSummary;
         }
 
-        //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpGet("all")]
         public async Task<IEnumerable<AppUserViewModel>> All() =>
            await _userManager.Users.Select(u => u.ToAppUserViewModel()).ToListAsync();
