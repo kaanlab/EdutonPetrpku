@@ -49,7 +49,7 @@
     MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public AppUserModel Context { get; set; } = new AppUserModel();
+    public AppUserCreateViewModel Context { get; set; } = new AppUserCreateViewModel();
 
     private bool formInvalid = true;
     private EditContext editContext;
@@ -103,7 +103,7 @@
 
                 using var responseStream = await response.Content.ReadAsStreamAsync();
 
-                var newUploadResult = await JsonSerializer.DeserializeAsync<UploadFileModel>(responseStream, options);
+                var newUploadResult = await JsonSerializer.DeserializeAsync<UploadFileViewModel>(responseStream, options);
                 Context.Image = newUploadResult.Url;
             }
 

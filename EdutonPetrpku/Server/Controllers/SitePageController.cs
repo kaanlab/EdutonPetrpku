@@ -40,7 +40,7 @@ namespace EdutonPetrpku.Server.Controllers
 
         [HttpGet("{url}")]
         public async Task<ActionResult<SitePage>> GetPage(string url) =>        
-            await _context.SitePages.FirstOrDefaultAsync(p => p.Url == url);
+            await _context.SitePages.FindAsync(url);
 
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]

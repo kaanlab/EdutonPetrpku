@@ -40,7 +40,7 @@ namespace EdutonPetrpku.Server.Controllers
 
         [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
         [HttpPost("avatar")]
-        public ActionResult<UploadFileModel> UploadAvatar([FromForm] IEnumerable<IFormFile> files)
+        public ActionResult<UploadFileViewModel> UploadAvatar([FromForm] IEnumerable<IFormFile> files)
         {
             var file = files.FirstOrDefault();
             var url = Path.Combine("upload", file.FileName);
@@ -50,7 +50,7 @@ namespace EdutonPetrpku.Server.Controllers
                 file.CopyTo(stream);
             }            
 
-            return Ok(new UploadFileModel { Url = url });
+            return Ok(new UploadFileViewModel { Url = url });
         }
     }
 }

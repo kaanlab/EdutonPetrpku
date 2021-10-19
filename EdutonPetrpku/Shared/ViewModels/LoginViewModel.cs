@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdutonPetrpku.Shared
 {
-    public class LoginModel
+    public class LoginViewModel
     {
         public string Login { get; set; }
         public string Password { get; set; }

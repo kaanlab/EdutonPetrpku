@@ -2,40 +2,48 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<MudTable Items="@appUsers" Hover="true" Class="my-5">
-    <ToolBarContent>
-        <MudIconButton Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Size="Size.Large" @onclick="AddUser" Class="mr-3" />
-        <MudText Typo="Typo.h6">Пользователи</MudText>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh>Логотип</MudTh>
-        <MudTh>Название училища</MudTh>
-        <MudTh>Логин</MudTh>
-        <MudTh>Почта</MudTh>
-        <MudTh></MudTh>
-        <MudTh></MudTh>
-        <MudTh></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Изображение">
-            <img class="img-thumbnail" src="@context.Image" style="min-height:100px;height:100px;" />
-        </MudTd>
-        <MudTd DataLabel="Название училища">@context.DisplayName</MudTd>
-        <MudTd DataLabel="Логин">@context.UserName</MudTd>
-        <MudTd DataLabel="Почта">@context.Email</MudTd>
-        <MudTd><MudButton Color="Color.Info" @onclick="@((e) => UpdateUser(context))">Изменить</MudButton></MudTd>
-        <MudTd><MudButton Color="Color.Warning" @onclick="@((e) => ChangePassword(context))">Сменить пароль</MudButton></MudTd>
-        <MudTd><MudButton Color="Color.Error" @onclick="@((e) => DeleteUser(context))">Удалить</MudButton></MudTd>
-    </RowTemplate>
-</MudTable>
+
+@if (appUsers is not null)
+{ 
+    <MudTable Items="@appUsers" Hover="true" Class="my-5">
+        <ToolBarContent>
+            <MudIconButton Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Size="Size.Large" @onclick="AddUser" Class="mr-3" />
+            <MudText Typo="Typo.h6">Пользователи</MudText>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Логотип</MudTh>
+            <MudTh>Название училища</MudTh>
+            <MudTh>Логин</MudTh>
+            <MudTh>Почта</MudTh>
+            <MudTh></MudTh>
+            <MudTh></MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Изображение">
+                <img class="img-thumbnail" src="@context.Image" style="min-height:100px;height:100px;" />
+            </MudTd>
+            <MudTd DataLabel="Название училища">@context.DisplayName</MudTd>
+            <MudTd DataLabel="Логин">@context.UserName</MudTd>
+            <MudTd DataLabel="Почта">@context.Email</MudTd>
+            <MudTd><MudButton Color="Color.Info" @onclick="@((e) => UpdateUser(context))">Изменить</MudButton></MudTd>
+            <MudTd><MudButton Color="Color.Warning" @onclick="@((e) => ChangePassword(context))">Сменить пароль</MudButton></MudTd>
+            <MudTd><MudButton Color="Color.Error" @onclick="@((e) => DeleteUser(context))">Удалить</MudButton></MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+<MudProgressCircular Indeterminate="true"></MudProgressCircular>
+}
 
 
 @code {
-    private List<AppUser> appUsers = new List<AppUser>();
+    private List<AppUserViewModel> appUsers;
 
     protected override async Task OnInitializedAsync()
     {
-        appUsers = await httpClient.GetFromJsonAsync<List<AppUser>>("api/user/all");
+        appUsers = await httpClient.GetFromJsonAsync<List<AppUserViewModel>>("api/user/all");
     }
 
     private async Task AddUser()
@@ -45,10 +53,10 @@
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PostAsJsonAsync<AppUserModel>("api/user/add", result.Data as AppUserModel);
+            var response = await httpClient.PostAsJsonAsync<AppUserCreateViewModel>("api/user/add", result.Data as AppUserCreateViewModel);
             if (response.IsSuccessStatusCode)
             {
-                var addedUser = await response.Content.ReadFromJsonAsync<AppUser>();
+                var addedUser = await response.Content.ReadFromJsonAsync<AppUserViewModel>();
                 appUsers.Add(addedUser);
                 Snackbar.Add("Пользователь успешно добавлен!", Severity.Success);
             }
@@ -60,19 +68,19 @@
     }
 
 
-    private async Task UpdateUser(AppUser context)
+    private async Task UpdateUser(AppUserViewModel context)
     {
-        var appUserModel = new AppUserUpdateModel { DisplayName = context.DisplayName, Email = context.Email, Image = context.Image, UserName = context.UserName };
+        var appUserModel = new AppUserUpdateViewModel { DisplayName = context.DisplayName, Email = context.Email, Image = context.Image, UserName = context.UserName };
         var parameters = new DialogParameters { ["context"] = appUserModel };
 
         var dialog = DialogService.Show<UserUpdateDialog>("Обновить данные пользователя", parameters);
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var response = await httpClient.PutAsJsonAsync<AppUserUpdateModel>("api/user/update", result.Data as AppUserUpdateModel);
+            var response = await httpClient.PutAsJsonAsync<AppUserUpdateViewModel>("api/user/update", result.Data as AppUserUpdateViewModel);
             if (response.IsSuccessStatusCode)
             {
-                var updatedUser = await response.Content.ReadFromJsonAsync<AppUser>();
+                var updatedUser = await response.Content.ReadFromJsonAsync<AppUserViewModel>();
                 var index = appUsers.IndexOf(context);
                 appUsers.Remove(context);
                 appUsers.Insert(index, updatedUser);
@@ -86,9 +94,9 @@
     }
 
 
-    private async Task ChangePassword(AppUser context)
+    private async Task ChangePassword(AppUserViewModel context)
     {
-        var appUserModel = new AppUserChPassModel { DisplayName = context.DisplayName, UserName = context.UserName };
+        var appUserModel = new AppUserChPassViewModel { DisplayName = context.DisplayName, UserName = context.UserName };
         var parameters = new DialogParameters { ["context"] = appUserModel };
 
         var dialog = DialogService.Show<UserChangePwDialog>("Сменить пароль пользователя", parameters);
@@ -96,7 +104,7 @@
 
         if (!result.Cancelled)
         {
-            var response = await httpClient.PostAsJsonAsync<AppUserChPassModel>("api/user/changepw", result.Data as AppUserChPassModel);
+            var response = await httpClient.PostAsJsonAsync<AppUserChPassViewModel>("api/user/changepw", result.Data as AppUserChPassViewModel);
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add("Пароль успешно обновлен!", Severity.Success);
@@ -109,7 +117,7 @@
     }
 
 
-    private async Task DeleteUser(AppUser context)
+    private async Task DeleteUser(AppUserViewModel context)
     {
         var parameters = new DialogParameters { ["context"] = context };
 
@@ -123,7 +131,7 @@
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                var userToDelete = result.Data as AppUser;
+                var userToDelete = result.Data as AppUserViewModel;
                 var response = await httpClient.DeleteAsync($"api/user/delete/{userToDelete.UserName}");
                 if (response.IsSuccessStatusCode)
                 {

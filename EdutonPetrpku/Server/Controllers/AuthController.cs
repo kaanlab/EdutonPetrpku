@@ -22,7 +22,7 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResult>> Login(LoginModel loginModel)
+        public async Task<ActionResult<LoginResult>> Login(LoginViewModel loginModel)
         {
             if(string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
             {

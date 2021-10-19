@@ -26,7 +26,7 @@ namespace EdutonPetrpku.Server.Controllers
 
         [Authorize(Roles = GlobalVarables.Roles.USER)]
         [HttpPost("savechoice")]
-        public async Task<ActionResult<Nationality>> SaveChoice(SurveyModel surveyModel)
+        public async Task<ActionResult<Nationality>> SaveChoice(SurveyViewModel surveyModel)
         {
             if (surveyModel.AppUserId is not null &&  surveyModel.NationalityId > 0)
             {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdutonPetrpku.Shared
 {
-    public class AppUserUpdateModel
+    public class AppUserViewModel
     {
         public string DisplayName { get; set; }
         public string Image { get; set; }

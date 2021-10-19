@@ -16,5 +16,16 @@ namespace EdutonPetrpku.Shared
         // relationship
         public string? AppUserId { get; set; }
         public AppUser? AppUser { get; set; }
+
+
+        public NationalityViewModel ToNationalityViewModel() => new NationalityViewModel()
+        {
+            Id = this.Id,
+            Name = this.Name,
+            Population = this.Population,
+            Subject = this.Subject,
+            AppUserDisplayName = this.AppUser?.DisplayName ?? "свободно"
+        };
+            
     }
 }

@@ -28,7 +28,7 @@ namespace EdutonPetrpku.Client.Services
         }
 
 
-        public async Task<LoginResult> Login(LoginModel loginModel)
+        public async Task<LoginResult> Login(LoginViewModel loginModel)
         {
             var result = await _httpClient.PostAsJsonAsync("api/auth/login", loginModel);
 
