@@ -12,6 +12,8 @@ namespace EdutonPetrpku.Shared
         public string Name { get; set; }
         public string Subject { get; set; }
         public int Population { get; set; }
+
+        public string AppUserId { get; set; }
         public string AppUserDisplayName { get; set; }
     }
 }

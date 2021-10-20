@@ -24,6 +24,7 @@ namespace EdutonPetrpku.Shared
             Name = this.Name,
             Population = this.Population,
             Subject = this.Subject,
+            AppUserId = this.AppUserId,
             AppUserDisplayName = this.AppUser?.DisplayName ?? "свободно"
         };
             

@@ -26,11 +26,11 @@ namespace EdutonPetrpku.Server.Controllers
 
         [Authorize(Roles = GlobalVarables.Roles.USER)]
         [HttpPost("savechoice")]
-        public async Task<ActionResult<Nationality>> SaveChoice(SurveyViewModel surveyModel)
+        public async Task<ActionResult<NationalityViewModel>> SaveChoice(SurveyViewModel surveyModel)
         {
             if (surveyModel.AppUserId is not null &&  surveyModel.NationalityId > 0)
             {
-                var nationality = _context.Nationalities.FirstOrDefault(n => n.Id == surveyModel.NationalityId);
+                var nationality = await _context.Nationalities.FindAsync(surveyModel.NationalityId);
                 var appUser = await _userManager.FindByIdAsync(surveyModel.AppUserId);
                 nationality.AppUser = new AppUser();
                 nationality.AppUser = appUser;
@@ -38,7 +38,7 @@ namespace EdutonPetrpku.Server.Controllers
                 _context.Update(nationality);
                 await _context.SaveChangesAsync();
 
-                return Ok(nationality);
+                return Ok(nationality.ToNationalityViewModel());
             }
             return BadRequest();
         }

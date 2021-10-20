@@ -28,7 +28,7 @@ else
                     <MudSelect Label="Перечень коренных малочисленных народов" @bind-Value="UserChoice" HelperText="Коренной народ"
                                AdornmentIcon="@Icons.Material.Filled.Groups" AdornmentColor="Color.Primary" Required="true">
                         <MudSelectItem Value="-1" Disabled="true">Выберите тему из списка</MudSelectItem>
-                        @foreach (Nationality nationality in freeNationalities)
+                        @foreach (NationalityViewModel nationality in freeNationalities)
                             {
                             <MudSelectItem Value="@nationality.Id">@nationality.Name</MudSelectItem>
                             }
@@ -54,9 +54,9 @@ else
 
     private string authUserId;
     private string authUserRole;
-    private List<Nationality> allNationalities;
-    private List<Nationality> freeNationalities;
-    private Nationality? checkedNationaliti;
+    private List<NationalityViewModel> allNationalities;
+    private List<NationalityViewModel> freeNationalities;
+    private NationalityViewModel? checkedNationaliti;
     private SurveyViewModel model = new SurveyViewModel();
     private bool success;
 
@@ -72,9 +72,9 @@ else
         var authUser = (await authenticationState).User;
         authUserId = authUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid).Value;
 
-        allNationalities = await httpClient.GetFromJsonAsync<List<Nationality>>("api/nationality/all");
-        checkedNationaliti = allNationalities.FirstOrDefault(u => u.AppUserId == authUserId);
-        freeNationalities = allNationalities.Where(u => u.AppUser == null).ToList();
+        allNationalities = await httpClient.GetFromJsonAsync<List<NationalityViewModel>>("api/nationality/all");
+        checkedNationaliti = allNationalities.Find(u => u.AppUserId == authUserId);
+        freeNationalities = allNationalities.Where(u => u.AppUserId == null).ToList();
     }
 
     private void OnValidSubmit(EditContext context)
@@ -91,7 +91,7 @@ else
         var response = await httpClient.PostAsJsonAsync<SurveyViewModel>("api/survey/savechoice", model);
         if (response.IsSuccessStatusCode)
         {
-            checkedNationaliti = await response.Content.ReadFromJsonAsync<Nationality>();
+            checkedNationaliti = await response.Content.ReadFromJsonAsync<NationalityViewModel>();
         }
         StateHasChanged();
     }
