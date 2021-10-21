@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace EdutonPetrpku.Shared
 {
-    public class LoginResult
+    public class TokenViewModel
     {
-        public bool Successful { get; set; }
-        public string Error { get; set; }
-        public string Token { get; set; }
+        public string AccessToken { get; set; }
+
+        public string RefreshToken { get; set; }
     }
 }

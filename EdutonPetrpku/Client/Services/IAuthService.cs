@@ -8,7 +8,7 @@ namespace EdutonPetrpku.Client.Services
 {
     public interface IAuthService
     {
-        Task<LoginResult> Login(LoginViewModel loginModel);
+        Task<LoginResultViewModel> Login(LoginViewModel loginModel);
         Task Logout();
     }
 }

@@ -28,21 +28,21 @@ namespace EdutonPetrpku.Client.Services
         }
 
 
-        public async Task<LoginResult> Login(LoginViewModel loginModel)
+        public async Task<LoginResultViewModel> Login(LoginViewModel loginModel)
         {
             var result = await _httpClient.PostAsJsonAsync("api/auth/login", loginModel);
 
             if (result.IsSuccessStatusCode)
             {
-                var loginResult = await result.Content.ReadFromJsonAsync<LoginResult>();
+                var loginResult = await result.Content.ReadFromJsonAsync<LoginResultViewModel>();
                 await _localStorage.SetItemAsync("authToken", loginResult.Token);
                 ((AppAuthStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(loginResult.Token);
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
 
-                return new LoginResult { Successful = true };
+                return new LoginResultViewModel { Successful = true };
             }
 
-            return new LoginResult { Successful = false, Error = "Неверное имя пользователя или пароль!" };
+            return new LoginResultViewModel { Successful = false, Error = "Неверное имя пользователя или пароль!" };
         }
 
         public async Task Logout()
