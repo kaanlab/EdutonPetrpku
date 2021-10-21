@@ -31,7 +31,7 @@ namespace EdutonPetrpku.Server.Controllers
             var articles = await _context.Articles.Include(u => u.AppUser).ToListAsync();
             if (articles is not null)
             {
-                return Ok(articles);
+                return Ok(articles.OrderByDescending(a => a.Id));
             }
             else
             {
