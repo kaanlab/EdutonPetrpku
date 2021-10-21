@@ -2,6 +2,7 @@
 using EdutonPetrpku.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace EdutonPetrpku.Server.Controllers
@@ -22,7 +23,7 @@ namespace EdutonPetrpku.Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResult>> Login(LoginViewModel loginModel)
+        public async Task<ActionResult<LoginResultViewModel>> Login(LoginViewModel loginModel)
         {
             if(string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
             {
@@ -32,20 +33,27 @@ namespace EdutonPetrpku.Server.Controllers
             var user = await _userManager.FindByNameAsync(loginModel.Login);
             if (user == null)
             {
-                return Unauthorized(new LoginResult { Successful = false, Error = "Неверное имя пользователя или пароль!" });
+                return Unauthorized(new LoginResultViewModel { Successful = false, Error = "Неверное имя пользователя или пароль!" });
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
             if (result.Succeeded)
             {
-                return new LoginResult
+                var refreshtoken = _jwtService.GenerateRefreshToken();
+                user.RefreshToken = refreshtoken;
+                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+
+                await _userManager.UpdateAsync(user);
+
+                return new LoginResultViewModel
                 {
                     Successful = true,
-                    Token = await _jwtService.CreateToken(user, GlobalVarables.KEY)
+                    Token = await _jwtService.CreateToken(user, GlobalVarables.KEY),
+                    RefreshToken = refreshtoken
                 };
             }
 
-            return Unauthorized(new LoginResult { Successful = false, Error = "Неверное имя пользователя или пароль!" });
+            return Unauthorized(new LoginResultViewModel { Successful = false, Error = "Неверное имя пользователя или пароль!" });
         }
     }
 }

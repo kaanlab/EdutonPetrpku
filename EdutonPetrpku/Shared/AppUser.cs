@@ -11,6 +11,8 @@ namespace EdutonPetrpku.Shared
     {
         public string DisplayName { get; set; }
         public string Image { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiryTime { get; set; }
 
         // relationship
         public Nationality Nationality { get; set; }
