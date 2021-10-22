@@ -1,8 +1,11 @@
 ﻿@page "/"
 
+@implements IDisposable
+
 @inject HttpClient httpClient
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@inject HttpInterceptorService Interceptor
 
 
 <!-- Page Heading -->
@@ -123,6 +126,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Interceptor.RegisterEvent();
         articles = await httpClient.GetFromJsonAsync<List<Article>>("api/article/all");
         users = await httpClient.GetFromJsonAsync<List<AppUserSummaryViewModel>>("api/user/summary");
     }
@@ -193,5 +197,10 @@ else
             }
 
         }
+    }
+
+    void IDisposable.Dispose()
+    {
+        Interceptor.DisposeEvent();
     }
 }

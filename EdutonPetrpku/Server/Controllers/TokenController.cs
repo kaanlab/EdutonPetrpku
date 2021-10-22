@@ -25,13 +25,13 @@ namespace EdutonPetrpku.Server.Controllers
 
         [HttpPost]
         [Route("refresh")]
-        public async Task<IActionResult> Refresh(TokenViewModel tokenViewModel)
+        public async Task<ActionResult<TokenViewModel>> Refresh(TokenViewModel tokenViewModel)
         {
             if (tokenViewModel is null)
             {
                 return BadRequest("Invalid client request");
             }
-            string accessToken = tokenViewModel.AccessToken;
+            string accessToken = tokenViewModel.Token;
             string refreshToken = tokenViewModel.RefreshToken;
             var principal = _jwtService.GetPrincipalFromExpiredToken(accessToken, GlobalVarables.KEY);
             var username = principal.Identity.Name; //this is mapped to the Name claim by default
@@ -41,16 +41,16 @@ namespace EdutonPetrpku.Server.Controllers
                 return BadRequest("Invalid client request");
             }
 
-            var newAccessToken = _jwtService.CreateToken(user, GlobalVarables.KEY);
+            var newAccessToken = await _jwtService.CreateToken(user, GlobalVarables.KEY);
             var newRefreshToken = _jwtService.GenerateRefreshToken();
             user.RefreshToken = newRefreshToken;
             await _userManager.UpdateAsync(user);
 
-            return new ObjectResult(new
+            return new TokenViewModel()
             {
-                accessToken = newAccessToken,
-                refreshToken = newRefreshToken
-            });
+                Token = newAccessToken,
+                RefreshToken = newRefreshToken
+            };
         }
 
 

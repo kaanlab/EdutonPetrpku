@@ -25,7 +25,7 @@ namespace EdutonPetrpku.Server.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoginResultViewModel>> Login(LoginViewModel loginModel)
         {
-            if(string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
+            if (string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
             {
                 return BadRequest();
             }
@@ -45,12 +45,13 @@ namespace EdutonPetrpku.Server.Controllers
 
                 await _userManager.UpdateAsync(user);
 
-                return new LoginResultViewModel
-                {
-                    Successful = true,
-                    Token = await _jwtService.CreateToken(user, GlobalVarables.KEY),
-                    RefreshToken = refreshtoken
-                };
+                return Ok(
+                    new LoginResultViewModel
+                    {
+                        Successful = true,
+                        Token = await _jwtService.CreateToken(user, GlobalVarables.KEY),
+                        RefreshToken = refreshtoken
+                    });
             }
 
             return Unauthorized(new LoginResultViewModel { Successful = false, Error = "Неверное имя пользователя или пароль!" });

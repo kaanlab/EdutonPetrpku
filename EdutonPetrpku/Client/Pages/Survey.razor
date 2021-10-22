@@ -1,6 +1,9 @@
 ﻿@page "/survey"
 
+@implements IDisposable
+
 @inject HttpClient httpClient
+@inject HttpInterceptorService Interceptor
 
 @attribute [Authorize(Roles = GlobalVarables.Roles.USER)]
 
@@ -69,6 +72,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Interceptor.RegisterEvent();
         var authUser = (await authenticationState).User;
         authUserId = authUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid).Value;
 
@@ -94,6 +98,11 @@ else
             checkedNationaliti = await response.Content.ReadFromJsonAsync<Nationality>();
         }
         StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        Interceptor.DisposeEvent();
     }
 }
 

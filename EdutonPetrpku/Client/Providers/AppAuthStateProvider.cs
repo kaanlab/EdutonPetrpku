@@ -1,10 +1,12 @@
 ﻿using Blazored.LocalStorage;
+using EdutonPetrpku.Shared;
 using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -26,7 +28,7 @@ namespace EdutonPetrpku.Client.Providers
         {
             var savedToken = await _localStorage.GetItemAsync<string>("authToken");
 
-            if (string.IsNullOrWhiteSpace(savedToken))
+            if (string.IsNullOrWhiteSpace(savedToken) )
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
@@ -101,6 +103,26 @@ namespace EdutonPetrpku.Client.Providers
             }
 
             return Convert.FromBase64String(base64);
+        }
+
+        private async Task<bool> TryRefreshTokens(TokenViewModel tokenViewModel)
+        {
+            var refreshToken = await _localStorage.GetItemAsync<string>("refreshToken");
+            if (tokenViewModel is null || string.IsNullOrEmpty(refreshToken))
+            {
+                return false;
+            }
+
+            var response = await _httpClient.PostAsJsonAsync("api/token/refresh", tokenViewModel);
+            if (response.IsSuccessStatusCode)
+            {
+                var newTokens = await response.Content.ReadFromJsonAsync<TokenViewModel>();
+                await _localStorage.SetItemAsync("authToken", newTokens.Token);
+                await _localStorage.SetItemAsync("refreshToken", newTokens.RefreshToken);
+                return true;
+            }
+
+            return false;
         }
     }
 }

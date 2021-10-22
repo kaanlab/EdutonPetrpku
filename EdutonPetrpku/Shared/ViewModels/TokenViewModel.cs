@@ -8,8 +8,7 @@ namespace EdutonPetrpku.Shared
 {
     public class TokenViewModel
     {
-        public string AccessToken { get; set; }
-
+        public string Token { get; set; }
         public string RefreshToken { get; set; }
     }
 }

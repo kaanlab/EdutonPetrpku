@@ -36,6 +36,7 @@ namespace EdutonPetrpku.Client.Services
             {
                 var loginResult = await result.Content.ReadFromJsonAsync<LoginResultViewModel>();
                 await _localStorage.SetItemAsync("authToken", loginResult.Token);
+                await _localStorage.SetItemAsync("refreshToken", loginResult.RefreshToken);
                 ((AppAuthStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(loginResult.Token);
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
 
@@ -48,8 +49,30 @@ namespace EdutonPetrpku.Client.Services
         public async Task Logout()
         {
             await _localStorage.RemoveItemAsync("authToken");
+            await _localStorage.RemoveItemAsync("refreshToken");
             ((AppAuthStateProvider)_authenticationStateProvider).MarkUserAsLoggedOut();
             _httpClient.DefaultRequestHeaders.Authorization = null;
         }
+
+        public async Task<string> RefreshToken()
+        {
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+            var refreshToken = await _localStorage.GetItemAsync<string>("refreshToken");
+            var tokenViewModel = new TokenViewModel { Token = token, RefreshToken = refreshToken };
+
+            var response = await _httpClient.PostAsJsonAsync("api/token/refresh", tokenViewModel);
+            if (response.IsSuccessStatusCode)
+            {
+                var newTokens = await response.Content.ReadFromJsonAsync<TokenViewModel>();
+                await _localStorage.SetItemAsync("authToken", newTokens.Token);
+                await _localStorage.SetItemAsync("refreshToken", newTokens.RefreshToken);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", tokenViewModel.Token);
+
+                return newTokens.Token;
+            }
+
+            return string.Empty;    
+        }
+
     }
 }

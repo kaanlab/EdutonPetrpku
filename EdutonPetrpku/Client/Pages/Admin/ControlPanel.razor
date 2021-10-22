@@ -1,8 +1,27 @@
 ﻿@page "/admin"
+
 @using Microsoft.AspNetCore.Authorization
+
+@implements IDisposable
+
+@inject HttpInterceptorService Interceptor
 
 @attribute [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
 
 <UserTable />
 <NationalityTable />
 <SitePageTable />
+
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        Interceptor.RegisterEvent();
+    }
+
+    void IDisposable.Dispose()
+    {
+        Interceptor.DisposeEvent();
+    }
+}

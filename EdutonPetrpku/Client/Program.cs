@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace EdutonPetrpku.Client
 {
@@ -22,14 +23,24 @@ namespace EdutonPetrpku.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddScoped(sp => new HttpClient 
+            { 
+                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) 
+            }.EnableIntercept(sp));
+
+            builder.Services.AddHttpClientInterceptor();
+
             builder.Services.AddMudServices();
             builder.Services.AddBlazoredLocalStorage();
+
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();
+
             builder.Services.AddScoped<AuthenticationStateProvider, AppAuthStateProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddTransient<IAppVersionService, AppVersionService>();
+            builder.Services.AddScoped<RefreshTokenService>();
+            builder.Services.AddScoped<HttpInterceptorService>();
 
             await builder.Build().RunAsync();
         }
