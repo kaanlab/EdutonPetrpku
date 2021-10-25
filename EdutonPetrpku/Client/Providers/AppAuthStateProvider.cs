@@ -105,24 +105,24 @@ namespace EdutonPetrpku.Client.Providers
             return Convert.FromBase64String(base64);
         }
 
-        private async Task<bool> TryRefreshTokens(TokenViewModel tokenViewModel)
-        {
-            var refreshToken = await _localStorage.GetItemAsync<string>("refreshToken");
-            if (tokenViewModel is null || string.IsNullOrEmpty(refreshToken))
-            {
-                return false;
-            }
+        //private async Task<bool> TryRefreshTokens(TokenViewModel tokenViewModel)
+        //{
+        //    var refreshToken = await _localStorage.GetItemAsync<string>("refreshToken");
+        //    if (tokenViewModel is null || string.IsNullOrEmpty(refreshToken))
+        //    {
+        //        return false;
+        //    }
 
-            var response = await _httpClient.PostAsJsonAsync("api/token/refresh", tokenViewModel);
-            if (response.IsSuccessStatusCode)
-            {
-                var newTokens = await response.Content.ReadFromJsonAsync<TokenViewModel>();
-                await _localStorage.SetItemAsync("authToken", newTokens.Token);
-                await _localStorage.SetItemAsync("refreshToken", newTokens.RefreshToken);
-                return true;
-            }
+        //    var response = await _httpClient.PostAsJsonAsync("api/token/refresh", tokenViewModel);
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        var newTokens = await response.Content.ReadFromJsonAsync<TokenViewModel>();
+        //        await _localStorage.SetItemAsync("authToken", newTokens.Token);
+        //        await _localStorage.SetItemAsync("refreshToken", newTokens.RefreshToken);
+        //        return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
     }
 }

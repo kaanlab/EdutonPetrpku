@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blazored.LocalStorage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -11,10 +12,16 @@ namespace EdutonPetrpku.Client.Services
     {
         private readonly HttpClientInterceptor _interceptor;
         private readonly RefreshTokenService _refreshTokenService;
-        public HttpInterceptorService(HttpClientInterceptor interceptor, RefreshTokenService refreshTokenService)
+        private readonly ILocalStorageService _localStorage;
+
+        public HttpInterceptorService(
+            HttpClientInterceptor interceptor,
+            RefreshTokenService refreshTokenService,
+            ILocalStorageService localStorageService)
         {
             _interceptor = interceptor;
             _refreshTokenService = refreshTokenService;
+            _localStorage = localStorageService;
         }
         public void RegisterEvent() => _interceptor.BeforeSendAsync += InterceptBeforeHttpAsync;
         public async Task InterceptBeforeHttpAsync(object sender, HttpClientInterceptorEventArgs e)
@@ -22,9 +29,9 @@ namespace EdutonPetrpku.Client.Services
             var absPath = e.Request.RequestUri.AbsolutePath;
             if (!absPath.Contains("token") && !absPath.Contains("accounts"))
             {
-                var token = await _refreshTokenService.TryRefreshToken();
-                if (!string.IsNullOrEmpty(token))
+                if (await _refreshTokenService.TryRefreshToken())
                 {
+                    var token = await _localStorage.GetItemAsync<string>("authToken");
                     e.Request.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
                 }
             }

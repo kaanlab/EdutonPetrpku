@@ -61,6 +61,7 @@ namespace EdutonPetrpku.Server.Controllers
             var username = User.Identity.Name;
             var user = await _userManager.FindByNameAsync(username);
             if (user == null) return BadRequest();
+
             user.RefreshToken = null;
             await _userManager.UpdateAsync(user);
 

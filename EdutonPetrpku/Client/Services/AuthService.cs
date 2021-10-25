@@ -54,7 +54,7 @@ namespace EdutonPetrpku.Client.Services
             _httpClient.DefaultRequestHeaders.Authorization = null;
         }
 
-        public async Task<string> RefreshToken()
+        public async Task<RefreshTokenViewModel> RefreshToken()
         {
             var token = await _localStorage.GetItemAsync<string>("authToken");
             var refreshToken = await _localStorage.GetItemAsync<string>("refreshToken");
@@ -63,15 +63,15 @@ namespace EdutonPetrpku.Client.Services
             var response = await _httpClient.PostAsJsonAsync("api/token/refresh", tokenViewModel);
             if (response.IsSuccessStatusCode)
             {
-                var newTokens = await response.Content.ReadFromJsonAsync<TokenViewModel>();
-                await _localStorage.SetItemAsync("authToken", newTokens.Token);
-                await _localStorage.SetItemAsync("refreshToken", newTokens.RefreshToken);
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", tokenViewModel.Token);
+                var updatedTokenViewModel = await response.Content.ReadFromJsonAsync<TokenViewModel>();
+                await _localStorage.SetItemAsync("authToken", updatedTokenViewModel.Token);
+                await _localStorage.SetItemAsync("refreshToken", updatedTokenViewModel.RefreshToken);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", updatedTokenViewModel.Token);
 
-                return newTokens.Token;
+                return new RefreshTokenViewModel { Token = updatedTokenViewModel.Token, Successful = true };
             }
 
-            return string.Empty;    
+            return new RefreshTokenViewModel { Successful = false };    
         }
 
     }

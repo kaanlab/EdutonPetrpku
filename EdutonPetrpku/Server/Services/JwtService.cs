@@ -43,7 +43,7 @@ namespace EdutonPetrpku.Server.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(5),
+                Expires = DateTime.UtcNow.AddMinutes(5),
                 SigningCredentials = credentials
             };
             var tokenHandler = new JwtSecurityTokenHandler();

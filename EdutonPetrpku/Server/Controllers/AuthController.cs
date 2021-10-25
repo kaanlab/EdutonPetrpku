@@ -41,7 +41,7 @@ namespace EdutonPetrpku.Server.Controllers
             {
                 var refreshtoken = _jwtService.GenerateRefreshToken();
                 user.RefreshToken = refreshtoken;
-                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
                 await _userManager.UpdateAsync(user);
 

@@ -17,18 +17,25 @@ namespace EdutonPetrpku.Client.Services
             _authService = authService;
         }
 
-        public async Task<string> TryRefreshToken()
+        public async Task<bool> TryRefreshToken()
         {
             var authState = await _authProvider.GetAuthenticationStateAsync();
             var user = authState.User;
-            var exp = user.FindFirst(c => c.Type.Equals("exp")).Value;
-            var expTime = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(exp));
-            var timeUTC = DateTime.UtcNow;
-            var diff = expTime - timeUTC;
-            if (diff.TotalMinutes <= 2)
-                return await _authService.RefreshToken();
+            var exp = user.FindFirst(c => c.Type.Equals("exp"));
+            if (exp is not null)
+            {
+                var expTime = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(exp.Value));
+                var timeUTC = DateTime.UtcNow;
+                var diff = expTime - timeUTC;
+                if (diff.TotalMinutes <= 2)
+                {
+                    var refreshToken = await _authService.RefreshToken();
+                    if (refreshToken.Successful)
+                        return true;
+                }
+            }
 
-            return string.Empty;
+            return false;
         }
     }
 }

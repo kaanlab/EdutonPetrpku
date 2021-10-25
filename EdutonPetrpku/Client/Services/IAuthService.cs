@@ -10,6 +10,6 @@ namespace EdutonPetrpku.Client.Services
     {
         Task<LoginResultViewModel> Login(LoginViewModel loginModel);
         Task Logout();
-        Task<string> RefreshToken();
+        Task<RefreshTokenViewModel> RefreshToken();
     }
 }
