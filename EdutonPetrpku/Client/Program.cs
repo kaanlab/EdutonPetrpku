@@ -39,7 +39,6 @@ namespace EdutonPetrpku.Client
             builder.Services.AddScoped<AuthenticationStateProvider, AppAuthStateProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddTransient<IAppVersionService, AppVersionService>();
-            builder.Services.AddScoped<RefreshTokenService>();
             builder.Services.AddScoped<HttpInterceptorService>();
 
             await builder.Build().RunAsync();

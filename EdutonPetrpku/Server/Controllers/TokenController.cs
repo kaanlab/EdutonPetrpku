@@ -23,13 +23,12 @@ namespace EdutonPetrpku.Server.Controllers
             _userManager = userManager;
         }
 
-        [HttpPost]
-        [Route("refresh")]
-        public async Task<ActionResult<TokenViewModel>> Refresh(TokenViewModel tokenViewModel)
+        [HttpPost("refresh")]
+        public async Task<ActionResult<RefreshTokenViewModel>> Refresh(TokenViewModel tokenViewModel)
         {
             if (tokenViewModel is null)
             {
-                return BadRequest("Invalid client request");
+                return BadRequest(new RefreshTokenViewModel { Successful = false });
             }
             string accessToken = tokenViewModel.Token;
             string refreshToken = tokenViewModel.RefreshToken;
@@ -38,25 +37,17 @@ namespace EdutonPetrpku.Server.Controllers
             var user = await _userManager.FindByNameAsync(username);
             if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
             {
-                return BadRequest("Invalid client request");
+                return BadRequest(new RefreshTokenViewModel { Successful = false });
             }
 
             var newAccessToken = await _jwtService.CreateToken(user, GlobalVarables.KEY);
-            var newRefreshToken = _jwtService.GenerateRefreshToken();
-            user.RefreshToken = newRefreshToken;
-            await _userManager.UpdateAsync(user);
 
-            return new TokenViewModel()
-            {
-                Token = newAccessToken,
-                RefreshToken = newRefreshToken
-            };
+            return Ok(new RefreshTokenViewModel { Token = newAccessToken, Successful = true });
         }
 
 
-        [HttpPost, Authorize]
-        [Route("revoke")]
-        public async Task<IActionResult> Revoke()
+        [HttpPost("revoke"), Authorize]
+        public async Task<ActionResult> Revoke()
         {
             var username = User.Identity.Name;
             var user = await _userManager.FindByNameAsync(username);

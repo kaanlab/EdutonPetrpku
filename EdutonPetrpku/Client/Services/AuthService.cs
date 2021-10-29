@@ -61,18 +61,17 @@ namespace EdutonPetrpku.Client.Services
             var tokenViewModel = new TokenViewModel { Token = token, RefreshToken = refreshToken };
 
             var response = await _httpClient.PostAsJsonAsync("api/token/refresh", tokenViewModel);
-            if (response.IsSuccessStatusCode)
-            {
-                var updatedTokenViewModel = await response.Content.ReadFromJsonAsync<TokenViewModel>();
-                await _localStorage.SetItemAsync("authToken", updatedTokenViewModel.Token);
-                await _localStorage.SetItemAsync("refreshToken", updatedTokenViewModel.RefreshToken);
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", updatedTokenViewModel.Token);
+            var refreshTokenViewModel = await response.Content.ReadFromJsonAsync<RefreshTokenViewModel>();
 
-                return new RefreshTokenViewModel { Token = updatedTokenViewModel.Token, Successful = true };
+            if(refreshTokenViewModel is null || !refreshTokenViewModel.Successful)
+            {
+                await Logout();
+                return refreshTokenViewModel;
             }
 
-            return new RefreshTokenViewModel { Successful = false };    
-        }
+            await _localStorage.SetItemAsync("authToken", refreshTokenViewModel.Token);
 
+            return refreshTokenViewModel;
+        }
     }
 }
