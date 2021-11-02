@@ -11,6 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdutonPetrpku.Shared", "Edu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdutonPetrpku.Data", "EdutonPetrpku.Data\EdutonPetrpku.Data.csproj", "{CF70B6DA-9C19-4091-850F-391F6CE66920}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D78B2C30-A76B-4B13-B17F-D030455B7958}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EditonPetrpku.Client.Tests", "EditonPetrpku.Client.Tests\EditonPetrpku.Client.Tests.csproj", "{88C0CDC1-FE85-492F-BB1E-649A42334E65}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdutonPetrpku.Server.Tests", "EdutonPetrpku.Server.Tests\EdutonPetrpku.Server.Tests.csproj", "{85AE78F4-8616-4550-B008-15B4B305774D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +39,21 @@ Global
 		{CF70B6DA-9C19-4091-850F-391F6CE66920}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF70B6DA-9C19-4091-850F-391F6CE66920}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF70B6DA-9C19-4091-850F-391F6CE66920}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88C0CDC1-FE85-492F-BB1E-649A42334E65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88C0CDC1-FE85-492F-BB1E-649A42334E65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88C0CDC1-FE85-492F-BB1E-649A42334E65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88C0CDC1-FE85-492F-BB1E-649A42334E65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85AE78F4-8616-4550-B008-15B4B305774D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85AE78F4-8616-4550-B008-15B4B305774D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85AE78F4-8616-4550-B008-15B4B305774D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85AE78F4-8616-4550-B008-15B4B305774D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{88C0CDC1-FE85-492F-BB1E-649A42334E65} = {D78B2C30-A76B-4B13-B17F-D030455B7958}
+		{85AE78F4-8616-4550-B008-15B4B305774D} = {D78B2C30-A76B-4B13-B17F-D030455B7958}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5E2E13E5-6ECE-4EE9-BCA0-C23199A6A312}

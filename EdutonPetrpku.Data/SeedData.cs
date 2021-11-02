@@ -31,11 +31,11 @@ namespace EdutonPetrpku.Data
 
             if (!_userManager.Users.Any())
             {
-                var admin = new AppUser { DisplayName = "Администратор", UserName = "siteadmin", Email = "petrpku@mil.ru", Image = @"\upload\empty.jpg" };
+                var admin = new AppUser { DisplayName = "Администратор", UserName = "siteadmin", Email = "petrpku@mil.ru", Image = @"upload\empty.jpg" };
                 await _userManager.CreateAsync(admin, "1Password!");
                 await _userManager.AddToRoleAsync(admin, GlobalVarables.Roles.ADMIN);
 
-                var user = new AppUser { DisplayName = "Петрозаводское ПКУ", UserName = "petrpku", Email = "petrpku@mil.ru", Image = @"/img/1.jpg" };
+                var user = new AppUser { DisplayName = "Петрозаводское ПКУ", UserName = "petrpku", Email = "petrpku@mil.ru", Image = @"img\1.jpg" };
                 await _userManager.CreateAsync(user, "1Password!");
                 await _userManager.AddToRoleAsync(user, GlobalVarables.Roles.USER);
             }

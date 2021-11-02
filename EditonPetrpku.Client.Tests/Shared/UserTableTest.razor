@@ -1,0 +1,38 @@
+﻿@inherits TestContext
+@code {
+
+    [Fact]
+    public async Task UserTableForTowUsersShoudRendersTwoRows()
+    {
+        Services.AddSingleton<MudSnackbarProvider>();
+        Services.AddSingleton<MudDialogProvider>();
+
+        Services.AddSingleton<FakeNavigationManager>();
+        Services.AddSingleton<NavigationManager>(s => s.GetRequiredService<FakeNavigationManager>());
+
+        Services.AddSingleton<SnackbarService>();
+        Services.AddSingleton<ISnackbar>(s => s.GetRequiredService<SnackbarService>());
+
+        Services.AddSingleton<DialogService>();
+        Services.AddSingleton<IDialogService>(s => s.GetRequiredService<DialogService>());
+
+        var mock = Services.AddMockHttpClient();
+        mock.When("/api/user/all").RespondJson(
+            new List<AppUserViewModel> {
+                new AppUserViewModel { DisplayName = "Администратор", UserName = "siteadmin", Email = "petrpku@mil.ru", Image = @"upload\empty.jpg" },
+                new AppUserViewModel { DisplayName = "Петрозаводское ПКУ", UserName = "petrpku", Email = "petrpku@mil.ru", Image = @"img\1.jpg" }
+            });
+
+        var client = mock.ToHttpClient();
+        await client.GetAsync("http://localhost/api/user/all");
+
+
+        var cut = Render(@<UserTable />);
+
+
+        // Assert
+        var tableRows = cut.FindAll("tbody tr").Count;
+
+        tableRows.Should().Be(2);
+    }
+}
