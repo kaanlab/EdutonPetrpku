@@ -18,9 +18,9 @@ namespace EditonPetrpku.Client.Tests.Helpers
         public static MockHttpMessageHandler AddMockHttpClient(this TestServiceProvider services)
         {
             var mockHttpHandler = new MockHttpMessageHandler();
-            var httpClient = mockHttpHandler.ToHttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost");
-            services.AddSingleton<HttpClient>(httpClient);
+            //var httpClient = mockHttpHandler.ToHttpClient();
+            //httpClient.BaseAddress = new Uri("http://localhost");
+            //services.AddSingleton<HttpClient>(httpClient);
             return mockHttpHandler;
         }
 

@@ -1,38 +1,55 @@
 ﻿@inherits TestContext
 @code {
 
-    [Fact]
-    public async Task UserTableForTowUsersShoudRendersTwoRows()
+    MockHttpMessageHandler mock;
+    HttpClient httpClient;
+
+    public UserTableTest()
     {
-        Services.AddSingleton<MudSnackbarProvider>();
-        Services.AddSingleton<MudDialogProvider>();
+        this.AddMudBlazorSupport();
 
         Services.AddSingleton<FakeNavigationManager>();
         Services.AddSingleton<NavigationManager>(s => s.GetRequiredService<FakeNavigationManager>());
 
-        Services.AddSingleton<SnackbarService>();
-        Services.AddSingleton<ISnackbar>(s => s.GetRequiredService<SnackbarService>());
+        mock = Services.AddMockHttpClient();
 
-        Services.AddSingleton<DialogService>();
-        Services.AddSingleton<IDialogService>(s => s.GetRequiredService<DialogService>());
-
-        var mock = Services.AddMockHttpClient();
-        mock.When("/api/user/all").RespondJson(
-            new List<AppUserViewModel> {
-                new AppUserViewModel { DisplayName = "Администратор", UserName = "siteadmin", Email = "petrpku@mil.ru", Image = @"upload\empty.jpg" },
-                new AppUserViewModel { DisplayName = "Петрозаводское ПКУ", UserName = "petrpku", Email = "petrpku@mil.ru", Image = @"img\1.jpg" }
-            });
-
-        var client = mock.ToHttpClient();
-        await client.GetAsync("http://localhost/api/user/all");
+        httpClient = mock.ToHttpClient();
+        httpClient.BaseAddress = new Uri("http://localhost");
+        Services.AddSingleton<HttpClient>(httpClient);
 
 
-        var cut = Render(@<UserTable />);
+    }
 
+    [Theory]
+    [ClassData(typeof(UserTableTestData))]
+    public void UserTableForTwoUsersShoudRendersTwoRows(List<AppUserViewModel> appUserViewModels)
+    {
+        mock.When("/api/user/all").RespondJson(appUserViewModels);
+        var response = httpClient.GetAsync("/api/user/all").GetAwaiter().GetResult();
+
+        var cut = Render(@<UserTable/>);
 
         // Assert
         var tableRows = cut.FindAll("tbody tr").Count;
 
         tableRows.Should().Be(2);
+
+    }
+
+    [Theory]
+    [ClassData(typeof(UserTableTestData))]
+    public void UserTableForTwoUsersShoudRendersImgInFirstCell(List<AppUserViewModel> appUserViewModels)
+    {
+
+        mock.When("/api/user/all").RespondJson(appUserViewModels);
+        var response = httpClient.GetAsync("/api/user/all").GetAwaiter().GetResult();
+
+        var cut = Render(@<UserTable/>);
+        
+        // Assert
+        var firstTableCell = cut.Find("tbody td").Children.First();
+
+        firstTableCell.ClassName.Should().Be("img-thumbnail");
+        firstTableCell.OuterHtml.Should().Contain(@"upload\empty.jpg");
     }
 }
