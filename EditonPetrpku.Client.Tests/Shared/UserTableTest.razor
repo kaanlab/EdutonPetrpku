@@ -25,7 +25,7 @@
     public void UserTableForTwoUsersShoudRendersTwoRows(List<AppUserViewModel> appUserViewModels)
     {
         mock.When("/api/user/all").RespondJson(appUserViewModels);
-        var response = httpClient.GetAsync("/api/user/all").GetAwaiter().GetResult();
+        httpClient.GetAsync("/api/user/all").Wait();
 
         var cut = Render(@<UserTable/>);
 
@@ -42,7 +42,7 @@
     {
 
         mock.When("/api/user/all").RespondJson(appUserViewModels);
-        var response = httpClient.GetAsync("/api/user/all").GetAwaiter().GetResult();
+        httpClient.GetAsync("/api/user/all").Wait();
 
         var cut = Render(@<UserTable/>);
         

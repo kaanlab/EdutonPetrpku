@@ -1,4 +1,6 @@
 ﻿using EdutonPetrpku.Data;
+using EdutonPetrpku.Server.Exceptions;
+using EdutonPetrpku.Server.Repositories;
 using EdutonPetrpku.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,109 +18,121 @@ namespace EdutonPetrpku.Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
+        private readonly IUserRepository _userRepository;
 
-        public UserController(UserManager<AppUser> userManager)
+        public UserController(IUserRepository userRepository)
         {
-            _userManager = userManager;
+            _userRepository = userRepository;
         }
 
 
         [HttpGet("summary")]
-        public async Task<IEnumerable<AppUserSummaryViewModel>> Summary()
+        public ActionResult<IEnumerable<AppUserSummaryViewModel>> Summary()
         {
-            List<AppUserSummaryViewModel> appUsersSummary = new List<AppUserSummaryViewModel>();
-            var allUsersExpectAdmin = await _userManager.Users.Where(u => u.UserName != "siteadmin").Include(n => n.Nationality).ToListAsync();
-            foreach (var user in allUsersExpectAdmin)
+            try
             {
-                var appUserSummary = new AppUserSummaryViewModel();
-                appUserSummary.AppUserDisplayName = user.DisplayName;
-                appUserSummary.NationalityName = (user.Nationality is not null) ? user.Nationality.Name : "выбор не сделан";
-                appUserSummary.IsSelected = user.Nationality is not null;
+                List<AppUserSummaryViewModel> appUsersSummary = new List<AppUserSummaryViewModel>();
+                var allUsersExpectAdmin = _userRepository.AllUsersExpectAdmin();
 
-                appUsersSummary.Add(appUserSummary);
-            }
+                if (allUsersExpectAdmin is null)
+                    return Problem("коллекция пустая");
 
-            return appUsersSummary;
-        }
-
-        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
-        [HttpGet("all")]
-        public async Task<IEnumerable<AppUserViewModel>> All() =>
-           await _userManager.Users.Select(u => u.ToAppUserViewModel()).ToListAsync();
-
-
-        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
-        [HttpPost("add")]
-        public async Task<AppUserViewModel> Add(AppUserCreateViewModel userModel)
-        {
-            var appUser = new AppUser
-            {
-                DisplayName = userModel.DisplayName,
-                UserName = userModel.UserName,
-                Email = userModel.Email,
-                Image = userModel.Image
-            };
-            await _userManager.CreateAsync(appUser, userModel.Password);
-            await _userManager.AddToRoleAsync(appUser, GlobalVarables.Roles.USER);
-
-            return appUser.ToAppUserViewModel();
-        }
-
-
-        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
-        [HttpPut("update")]
-        public async Task<AppUserViewModel> Update(AppUserUpdateViewModel userModel)
-        {
-            var appUser = await _userManager.FindByNameAsync(userModel.UserName);
-
-            appUser.UserName = userModel.UserName;
-            appUser.Email = userModel.Email;
-            appUser.Image = userModel.Image;
-            appUser.DisplayName = userModel.DisplayName;
-
-            await _userManager.UpdateAsync(appUser);
-
-            return appUser.ToAppUserViewModel();
-        }
-
-
-        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
-        [HttpPost("changepw")]
-        public async Task<ActionResult<AppUser>> ChangePassword(AppUserChPassViewModel userModel)
-        {
-            var appUser = await _userManager.FindByNameAsync(userModel.UserName);
-
-            var result = await _userManager.ChangePasswordAsync(appUser, userModel.CurrentPassword, userModel.Password);
-            if (result.Succeeded)
-            {
-                return NoContent();
-            }
-
-            return BadRequest();
-        }
-
-
-        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
-        [HttpDelete("delete/{userToDelete}")]
-        public async Task<ActionResult> Delete(string userToDelete)
-        {
-            if (userToDelete == GlobalVarables.SITE_ADMIN_ACCOUNT)
-            {
-                return BadRequest();
-            }
-            else
-            {
-                var appUser = await _userManager.FindByNameAsync(userToDelete);
-
-                var result = await _userManager.DeleteAsync(appUser);
-                if (result.Succeeded)
+                foreach (var user in allUsersExpectAdmin)
                 {
-                    return NoContent();
+                    var appUserSummary = new AppUserSummaryViewModel();
+                    appUserSummary.AppUserDisplayName = user.DisplayName;
+                    appUserSummary.NationalityName = (user.Nationality is not null) ? user.Nationality.Name : "выбор не сделан";
+                    appUserSummary.IsSelected = user.Nationality is not null;
+
+                    appUsersSummary.Add(appUserSummary);
                 }
 
-                return BadRequest();
+                return Ok(appUsersSummary);
+
+            }
+            catch (UserRepositoryException e)
+            {
+                return Problem(e.Message);
             }
         }
+
+        //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        //[HttpGet("all")]
+        //public async Task<IEnumerable<AppUserViewModel>> All() =>
+        //   await _userManager.Users.Select(u => u.ToAppUserViewModel()).ToListAsync();
+
+
+        //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        //[HttpPost("add")]
+        //public async Task<AppUserViewModel> Add(AppUserCreateViewModel userModel)
+        //{
+        //    var appUser = new AppUser
+        //    {
+        //        DisplayName = userModel.DisplayName,
+        //        UserName = userModel.UserName,
+        //        Email = userModel.Email,
+        //        Image = userModel.Image
+        //    };
+        //    await _userManager.CreateAsync(appUser, userModel.Password);
+        //    await _userManager.AddToRoleAsync(appUser, GlobalVarables.Roles.USER);
+
+        //    return appUser.ToAppUserViewModel();
+        //}
+
+
+        //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        //[HttpPut("update")]
+        //public async Task<AppUserViewModel> Update(AppUserUpdateViewModel userModel)
+        //{
+        //    var appUser = await _userManager.FindByNameAsync(userModel.UserName);
+
+        //    appUser.UserName = userModel.UserName;
+        //    appUser.Email = userModel.Email;
+        //    appUser.Image = userModel.Image;
+        //    appUser.DisplayName = userModel.DisplayName;
+
+        //    await _userManager.UpdateAsync(appUser);
+
+        //    return appUser.ToAppUserViewModel();
+        //}
+
+
+        //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        //[HttpPost("changepw")]
+        //public async Task<ActionResult<AppUser>> ChangePassword(AppUserChPassViewModel userModel)
+        //{
+        //    var appUser = await _userManager.FindByNameAsync(userModel.UserName);
+
+        //    var result = await _userManager.ChangePasswordAsync(appUser, userModel.CurrentPassword, userModel.Password);
+        //    if (result.Succeeded)
+        //    {
+        //        return NoContent();
+        //    }
+
+        //    return BadRequest();
+        //}
+
+
+        //[Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        //[HttpDelete("delete/{userToDelete}")]
+        //public async Task<ActionResult> Delete(string userToDelete)
+        //{
+        //    if (userToDelete == GlobalVarables.SITE_ADMIN_ACCOUNT)
+        //    {
+        //        return BadRequest();
+        //    }
+        //    else
+        //    {
+        //        var appUser = await _userManager.FindByNameAsync(userToDelete);
+
+        //        var result = await _userManager.DeleteAsync(appUser);
+        //        if (result.Succeeded)
+        //        {
+        //            return NoContent();
+        //        }
+
+        //        return BadRequest();
+        //    }
+        //}
     }
 }

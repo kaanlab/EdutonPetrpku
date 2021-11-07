@@ -1,4 +1,5 @@
 using EdutonPetrpku.Data;
+using EdutonPetrpku.Server.Repositories;
 using EdutonPetrpku.Server.Services;
 using EdutonPetrpku.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -66,6 +67,7 @@ namespace EdutonPetrpku.Server
                 };
             });
 
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddTransient<SeedData>();
         }
 
