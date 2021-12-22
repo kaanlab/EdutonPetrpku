@@ -139,6 +139,7 @@ else
             {
                 var addedArticle = await response.Content.ReadFromJsonAsync<Article>();
                 articles.Add(addedArticle);
+                articles = articles.OrderByDescending(a => a.Id).ToList();
                 Snackbar.Add("Новость успешно добавлена!", Severity.Success);
             }
             else

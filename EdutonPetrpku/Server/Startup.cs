@@ -37,11 +37,11 @@ namespace EdutonPetrpku.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-                //.AddJsonOptions(options =>
-           // {
+            //.AddJsonOptions(options =>
+            // {
             //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-           //     options.JsonSerializerOptions.WriteIndented = true;
-           // });
+            //     options.JsonSerializerOptions.WriteIndented = true;
+            // });
 
             services.AddRazorPages();
 
@@ -70,7 +70,7 @@ namespace EdutonPetrpku.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -89,6 +89,15 @@ namespace EdutonPetrpku.Server
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "upload")),
                 RequestPath = new PathString("/upload")
+            });
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+                context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("Referrer-Policy", "same-origin");
+                //context.Response.Headers.Add("Content-Security-Policy", "default-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'none'");
+                await next();
             });
 
             app.UseRouting();

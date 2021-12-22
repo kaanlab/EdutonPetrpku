@@ -1,5 +1,6 @@
 ﻿@inject IAppVersionService AppVersionService
 @inject HttpClient httpClient
+
 <!-- Sidebar -->
 <div id="sidebar" class="@inactiveCss">
 
@@ -56,20 +57,14 @@
 
 @code {
 
-    bool inactive = true;
+    bool inactive = false;
 
     string inactiveCss => inactive ? null : "inactive";
 
     private List<SitePage> sitePages = null;
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() =>
         sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("api/sitepage/all");
 
-    }
-
-    void Toggle()
-    {
-        inactive = !inactive;
-    }
+    void Toggle() => inactive = !inactive;
 }
