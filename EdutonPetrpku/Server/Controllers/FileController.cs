@@ -52,5 +52,20 @@ namespace EdutonPetrpku.Server.Controllers
 
             return Ok(new UploadFileViewModel { Url = url });
         }
+
+        [Authorize(Roles = GlobalVarables.Roles.ADMIN)]
+        [HttpPost("diploma")]
+        public ActionResult<UploadFileViewModel> UploadDiploma([FromForm] IEnumerable<IFormFile> files)
+        {
+            var file = files.FirstOrDefault();
+            var url = Path.Combine("upload", "diplomas", file.FileName);
+            var fullPath = Path.Combine(_hostEnvironment.ContentRootPath, url);
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            return Ok(new UploadFileViewModel { Url = url });
+        }
     }
 }

@@ -11,11 +11,11 @@ namespace EdutonPetrpku.Shared
     {
         public string DisplayName { get; set; }
         public string Image { get; set; }
+        public string Diploma { get; set; }
 
         // relationship
         public Nationality Nationality { get; set; }
 
-        //public List<Article> Articles { get; set; }
 
 
         public AppUserViewModel ToAppUserViewModel() => new AppUserViewModel()
@@ -23,7 +23,8 @@ namespace EdutonPetrpku.Shared
             DisplayName = this.DisplayName,
             Image = this.Image,
             Email = this.Email,
-            UserName = this.UserName
+            UserName = this.UserName,
+            Diploma = this.Diploma
         };
 
     }

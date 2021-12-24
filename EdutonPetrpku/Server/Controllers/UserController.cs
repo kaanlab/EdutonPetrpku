@@ -57,7 +57,8 @@ namespace EdutonPetrpku.Server.Controllers
                 DisplayName = userModel.DisplayName,
                 UserName = userModel.UserName,
                 Email = userModel.Email,
-                Image = userModel.Image
+                Image = userModel.Image,
+                Diploma = userModel.Diploma
             };
             await _userManager.CreateAsync(appUser, userModel.Password);
             await _userManager.AddToRoleAsync(appUser, GlobalVarables.Roles.USER);
@@ -76,6 +77,7 @@ namespace EdutonPetrpku.Server.Controllers
             appUser.Email = userModel.Email;
             appUser.Image = userModel.Image;
             appUser.DisplayName = userModel.DisplayName;
+            appUser.Diploma = userModel.Diploma;
 
             await _userManager.UpdateAsync(appUser);
 

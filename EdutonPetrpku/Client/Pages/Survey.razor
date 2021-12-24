@@ -1,34 +1,35 @@
 ﻿@page "/survey"
 
 @inject HttpClient httpClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize(Roles = GlobalVarables.Roles.USER)]
 
-
-@if (allNationalities is null)
-{
-    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-}
-else if (checkedNationaliti is not null)
-{
-    <MudText Typo="Typo.h6" Class="my-4">Спасибо!</MudText>
-    <MudGrid>
-        <MudItem xs="12" sm="6" md="4">
-            <MudTextField @bind-Value="checkedNationaliti.Name" Label="Вы выбрали коренной народ" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Groups" AdornmentColor="Color.Info" Disabled="true" />
-        </MudItem>
-    </MudGrid>
-}
-else
-{
-    <MudText Typo="Typo.h6" Class="my-4">Ваша тема курса для эдутона</MudText>
-    <EditForm Model="@model" OnInvalidSubmit="OnValidSubmit">
-        <MudCard>
-            <MudCardContent>
-                <MudItem xs="12" sm="6" md="4">
-                    <MudSelect Label="Перечень коренных малочисленных народов" @bind-Value="UserChoice" HelperText="Коренной народ"
+<div>
+    @if (allNationalities is null)
+    {
+        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+    }
+    else if (checkedNationaliti is not null)
+    {
+        <MudText Typo="Typo.h6" Class="my-4">Спасибо!</MudText>
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="4">
+                <MudTextField @bind-Value="checkedNationaliti.Name" Label="Вы выбрали коренной народ" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Groups" AdornmentColor="Color.Info" Disabled="true" />
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <MudText Typo="Typo.h6" Class="my-4">Ваша тема курса для эдутона</MudText>
+        <EditForm Model="@model" OnInvalidSubmit="OnValidSubmit">
+            <MudCard>
+                <MudCardContent>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudSelect Label="Перечень коренных малочисленных народов" @bind-Value="UserChoice" HelperText="Коренной народ"
                                AdornmentIcon="@Icons.Material.Filled.Groups" AdornmentColor="Color.Primary" Required="true">
-                        <MudSelectItem Value="-1" Disabled="true">Выберите тему из списка</MudSelectItem>
-                        @foreach (NationalityViewModel nationality in freeNationalities)
+                            <MudSelectItem Value="-1" Disabled="true">Выберите тему из списка</MudSelectItem>
+                            @foreach (NationalityViewModel nationality in freeNationalities)
                             {
                             <MudSelectItem Value="@nationality.Id">@nationality.Name</MudSelectItem>
                             }
@@ -37,18 +38,29 @@ else
             </MudCardContent>
             <MudCardActions>
                 @if (UserChoice > 0)
-                {
-                    <MudAlert Severity="Severity.Warning">После нажатия на кнопку сохранить вы не сможете поменять тему!</MudAlert>
-                    <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Primary" OnClick="AcceptSuvery">Сохранить</MudButton>
-                }
-                else
-                {
-                    <MudAlert Severity="Severity.Info">Вы еще не выбрали тему для курса!</MudAlert>
-                }
-            </MudCardActions>
-        </MudCard>
-    </EditForm>
-}
+                    {
+                        <MudAlert Severity="Severity.Warning">После нажатия на кнопку сохранить вы не сможете поменять тему!</MudAlert>
+                        <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Primary" OnClick="AcceptSuvery">Сохранить</MudButton>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Info">Вы еще не выбрали тему для курса!</MudAlert>
+                    }
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    }
+</div>
+<div>
+    @if (appUser is null)
+    {
+        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+    }
+    else
+    {
+        <img src="@appUser.Diploma" class="img-fluid" alt="Responsive image">
+    }
+</div>
 
 @code {
 
@@ -58,6 +70,7 @@ else
     private List<NationalityViewModel> freeNationalities;
     private NationalityViewModel? checkedNationaliti;
     private SurveyViewModel model = new SurveyViewModel();
+    AppUserViewModel appUser;
     private bool success;
 
 
@@ -69,12 +82,20 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var authUser = (await authenticationState).User;
-        authUserId = authUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid).Value;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authUser = authState.User;
 
-        allNationalities = await httpClient.GetFromJsonAsync<List<NationalityViewModel>>("api/nationality/all");
-        checkedNationaliti = allNationalities.Find(u => u.AppUserId == authUserId);
-        freeNationalities = allNationalities.Where(u => u.AppUserId == null).ToList();
+        if (authUser.Identity.IsAuthenticated)
+        {
+            //var authUserName = authUser.Identity.Name;
+            authUserId = authUser.FindFirst(c => c.Type == ClaimTypes.Sid)?.Value;
+            var authUserName = authUser.FindFirst(c => c.Type == ClaimTypes.Webpage)?.Value;
+            var claims = authUser.Claims;
+            allNationalities = await httpClient.GetFromJsonAsync<List<NationalityViewModel>>("api/nationality/all");
+            checkedNationaliti = allNationalities.Find(u => u.AppUserId == authUserId);
+            freeNationalities = allNationalities.Where(u => u.AppUserId == null).ToList();
+
+        }
     }
 
     private void OnValidSubmit(EditContext context)

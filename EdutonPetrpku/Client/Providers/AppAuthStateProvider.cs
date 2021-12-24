@@ -79,6 +79,17 @@ namespace EdutonPetrpku.Client.Providers
                 keyValuePairs.Remove(ClaimTypes.Role);
             }
 
+            foreach (var item in keyValuePairs)
+            {
+                switch(item)
+                    item.Key == "sid";
+            }
+
+            var userSid = new Claim(ClaimTypes.Sid, appUser.Id.ToString());
+            var userName = new Claim(ClaimTypes.Name, appUser.UserName);
+            var userDisplayName = new Claim(ClaimTypes.GivenName, appUser.DisplayName);
+            var userImage = new Claim(ClaimTypes.Webpage, appUser.Image);
+
             claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
 
             return claims;

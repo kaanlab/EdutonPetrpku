@@ -4,7 +4,7 @@
 
 
 @if (appUsers is not null)
-{ 
+{
     <MudTable Items="@appUsers" Hover="true" Class="my-5">
         <ToolBarContent>
             <MudIconButton Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Size="Size.Large" @onclick="AddUser" Class="mr-3" />
@@ -15,6 +15,7 @@
             <MudTh>Название училища</MudTh>
             <MudTh>Логин</MudTh>
             <MudTh>Почта</MudTh>
+            <MudTh>Диплом</MudTh>
             <MudTh></MudTh>
             <MudTh></MudTh>
             <MudTh></MudTh>
@@ -26,6 +27,9 @@
             <MudTd DataLabel="Название училища">@context.DisplayName</MudTd>
             <MudTd DataLabel="Логин">@context.UserName</MudTd>
             <MudTd DataLabel="Почта">@context.Email</MudTd>
+            <MudTd DataLabel="Диплом">
+                <img class="img-thumbnail" src="@context.Diploma" style="min-height:100px;height:100px;" />
+            </MudTd>
             <MudTd><MudButton Color="Color.Info" @onclick="@((e) => UpdateUser(context))">Изменить</MudButton></MudTd>
             <MudTd><MudButton Color="Color.Warning" @onclick="@((e) => ChangePassword(context))">Сменить пароль</MudButton></MudTd>
             <MudTd><MudButton Color="Color.Error" @onclick="@((e) => DeleteUser(context))">Удалить</MudButton></MudTd>
@@ -34,7 +38,7 @@
 }
 else
 {
-<MudProgressCircular Indeterminate="true"></MudProgressCircular>
+    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
 }
 
 
