@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -31,10 +32,20 @@ namespace EdutonPetrpku.Client.Providers
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
+            var claims = ParseClaimsFromJwt(savedToken);
+
+            if(TokenIsExpired(claims.First(c => c.Type == ClaimTypes.Expired)))
+            {
+                await _localStorage.RemoveItemAsync("authToken");
+                MarkUserAsLoggedOut();
+                _httpClient.DefaultRequestHeaders.Authorization = null;
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            }
+
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
 
             return new AuthenticationState(
-                new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
+                new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt")));
         }
 
         public void MarkUserAsAuthenticated(string token)
@@ -53,65 +64,31 @@ namespace EdutonPetrpku.Client.Providers
 
         private IEnumerable<Claim> ParseClaimsFromJwt(string jwtToken)
         {
-            var claims = new List<Claim>();
-            var payload = jwtToken.Split('.')[1];
-            var jsonBytes = ParseBase64WithoutPadding(payload);
-            var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
+            var token = new JwtSecurityToken(jwtEncodedString: jwtToken);
 
-            keyValuePairs.TryGetValue("role", out object roles);
-
-            if (roles != null)
-            {
-                if (roles.ToString().Trim().StartsWith("["))
-                {
-                    var parsedRoles = JsonSerializer.Deserialize<string[]>(roles.ToString());
-
-                    foreach (var parsedRole in parsedRoles)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, parsedRole));
-                    }
-                }
-                else
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, roles.ToString()));
-                }
-
-                keyValuePairs.Remove(ClaimTypes.Role);
-            }
-
-            foreach (var item in keyValuePairs)
-            {
-                switch(item)
-                    item.Key == "sid";
-            }
-
-            var userSid = new Claim(ClaimTypes.Sid, appUser.Id.ToString());
-            var userName = new Claim(ClaimTypes.Name, appUser.UserName);
-            var userDisplayName = new Claim(ClaimTypes.GivenName, appUser.DisplayName);
-            var userImage = new Claim(ClaimTypes.Webpage, appUser.Image);
-
-            claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
-
-            return claims;
+            yield return new Claim(ClaimTypes.Sid, token.Claims.First(c => c.Type.Contains("sid"))?.Value);
+            yield return new Claim(ClaimTypes.Name, token.Claims.First(c => c.Type.Equals("unique_name"))?.Value);
+            yield return new Claim(ClaimTypes.GivenName, token.Claims.First(c => c.Type.Equals("given_name"))?.Value);
+            yield return new Claim(ClaimTypes.Webpage, token.Claims.First(c => c.Type.Equals("website"))?.Value);
+            yield return new Claim(ClaimTypes.Role, token.Claims.First(c => c.Type.Equals("role"))?.Value);
+            yield return new Claim(ClaimTypes.UserData, token.Claims.First(c => c.Type.Contains("userdata"))?.Value);
+            yield return new Claim(ClaimTypes.Expired, token.Claims.First(c => c.Type.Equals("exp"))?.Value);
         }
 
-        private byte[] ParseBase64WithoutPadding(string base64)
+        private bool TokenIsExpired(Claim exp)
         {
-
-            base64 = base64.Replace('-', '+'); // 62nd char of encoding
-            base64 = base64.Replace('_', '/'); // 63rd char of encoding
-
-            switch (base64.Length % 4)
+            if (exp is not null)
             {
-                case 2:
-                    base64 += "==";
-                    break;
-                case 3:
-                    base64 += "=";
-                    break;
+                var expTime = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(exp.Value));
+                var timeUTC = DateTime.UtcNow;
+                var diff = expTime - timeUTC;
+                if (diff.TotalMinutes <= 1)
+                {
+                    return true;
+                }
             }
 
-            return Convert.FromBase64String(base64);
+            return false;
         }
     }
 }

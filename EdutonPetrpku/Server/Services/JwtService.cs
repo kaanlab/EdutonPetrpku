@@ -28,8 +28,8 @@ namespace EdutonPetrpku.Server.Services
                 new Claim(ClaimTypes.Sid, appUser.Id.ToString()),
                 new Claim(ClaimTypes.Name, appUser.UserName),
                 new Claim(ClaimTypes.GivenName, appUser.DisplayName),
-                new Claim(ClaimTypes.Webpage, appUser.Image)
-
+                new Claim(ClaimTypes.Webpage, appUser.Image),
+                new Claim(ClaimTypes.UserData, appUser.Diploma)
             };
 
             foreach (var role in roles)

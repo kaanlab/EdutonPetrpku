@@ -50,19 +50,23 @@ namespace EdutonPetrpku.Server
             services.AddIdentity<AppUser, IdentityRole>(o => o.Password.RequireNonAlphanumeric = false)
                 .AddEntityFrameworkStores<AppDbContext>();
 
-            services.AddScoped<IJwtService, JwtService>();
+            services.AddTransient<IJwtService, JwtService>();
             services.AddAuthentication(o =>
             {
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(o =>
             {
+                o.RequireHttpsMetadata = false;
+                o.SaveToken = true;
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = GlobalVarables.KEY,
                     ValidateAudience = false,
-                    ValidateIssuer = false
+                    ValidateIssuer = false,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 
@@ -70,7 +74,7 @@ namespace EdutonPetrpku.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -90,15 +94,15 @@ namespace EdutonPetrpku.Server
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "upload")),
                 RequestPath = new PathString("/upload")
             });
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
-                context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                context.Response.Headers.Add("Referrer-Policy", "same-origin");
-                //context.Response.Headers.Add("Content-Security-Policy", "default-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'none'");
-                await next();
-            });
+            //app.Use((context, next) =>
+            //{
+            //    context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+            //    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+            //    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            //    context.Response.Headers.Add("Referrer-Policy", "same-origin");
+            //    //context.Response.Headers.Add("Content-Security-Policy", "default-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'none'");
+            //    next();
+            //});
 
             app.UseRouting();
 

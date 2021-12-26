@@ -1,5 +1,6 @@
 ﻿@inject IAppVersionService AppVersionService
 @inject HttpClient httpClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <!-- Sidebar -->
 <div id="sidebar" class="@inactiveCss">
@@ -9,7 +10,9 @@
         <!-- Search Box -->
         <section id="search" class="alt">
             <AuthorizeView>
-                <h3 id="given-name-logo">@context.User.Claims.FirstOrDefault(u => u.Type == "given_name")?.Value</h3>
+               
+                    <h3 id="given-name-logo">@context.User.Claims.First(c => c.Type == ClaimTypes.GivenName)?.Value </h3>
+               
             </AuthorizeView>
         </section>
 
@@ -34,8 +37,8 @@
                 <AuthorizeView Roles="@GlobalVarables.Roles.ADMIN">
                     <li><a href="admin">Панель управления</a></li>
                 </AuthorizeView>
-                <AuthorizeView>
-                    <li><a href="survey">Выбрать тему курса</a></li>
+                <AuthorizeView Roles="@GlobalVarables.Roles.USER">
+                    <li><a href="survey">Tема курса / Сертификат</a></li>
                 </AuthorizeView>
             </ul>
         </nav>
@@ -65,6 +68,6 @@
 
     protected override async Task OnInitializedAsync() =>
         sitePages = await httpClient.GetFromJsonAsync<List<SitePage>>("api/sitepage/all");
-
+    
     void Toggle() => inactive = !inactive;
 }
