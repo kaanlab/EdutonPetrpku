@@ -36,11 +36,11 @@
                 <MudItem>
                     @if (string.IsNullOrEmpty(Context.Diploma))
                     {
-                        <img class="img-thumbnail" src="upload/diploma.jpg" style="min-height:250px;height:250px;" />
+                        <img class="img-thumbnail" src="upload/diploma.jpg" style="min-height:200px;height:200px;" />
                     }
                     else
                     {
-                        <img class="img-thumbnail" src="@Context.Diploma" style="min-height:250px;height:250px;" />
+                        <img class="img-thumbnail" src="@Context.Diploma" style="min-height:200px;height:200px;" />
                     }
                 </MudItem>
                 <MudItem>
@@ -68,12 +68,8 @@
     [Parameter]
     public AppUserUpdateViewModel Context { get; set; } = new AppUserUpdateViewModel();
 
-    private string password;
-    private string confirmPassword;
-
     private bool formInvalid = true;
     private EditContext editContext;
-
 
     protected override void OnInitialized()
     {
