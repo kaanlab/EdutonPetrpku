@@ -16,6 +16,7 @@
             <MudTh>Логин</MudTh>
             <MudTh>Почта</MudTh>
             <MudTh>Диплом</MudTh>
+            <MudTh>Ссылка на PDF</MudTh> 
             <MudTh></MudTh>
             <MudTh></MudTh>
             <MudTh></MudTh>
@@ -30,6 +31,7 @@
             <MudTd DataLabel="Диплом">
                 <img class="img-thumbnail" src="@context.Diploma" style="min-height:100px;height:100px;" />
             </MudTd>
+             <MudTd DataLabel="Ссылка на PDF">@context.PdfUrl</MudTd>
             <MudTd><MudButton Color="Color.Info" @onclick="@((e) => UpdateUser(context))">Изменить</MudButton></MudTd>
             <MudTd><MudButton Color="Color.Warning" @onclick="@((e) => ChangePassword(context))">Сменить пароль</MudButton></MudTd>
             <MudTd><MudButton Color="Color.Error" @onclick="@((e) => DeleteUser(context))">Удалить</MudButton></MudTd>

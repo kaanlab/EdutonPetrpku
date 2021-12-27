@@ -13,5 +13,6 @@ namespace EdutonPetrpku.Shared
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Diploma { get; set; }
+        public string PdfUrl { get; set; }
     }
 }

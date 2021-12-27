@@ -12,6 +12,7 @@ namespace EdutonPetrpku.Shared
         public string DisplayName { get; set; }
         public string Image { get; set; }
         public string Diploma { get; set; }
+        public string PdfUrl { get; set; }
 
         // relationship
         public Nationality Nationality { get; set; }
@@ -24,7 +25,8 @@ namespace EdutonPetrpku.Shared
             Image = this.Image,
             Email = this.Email,
             UserName = this.UserName,
-            Diploma = this.Diploma
+            Diploma = this.Diploma,
+            PdfUrl = this.PdfUrl
         };
 
     }

@@ -55,6 +55,27 @@
                             for="diplomaInput" />
                 </MudItem>
             </MudGrid>
+            <MudGrid Class="mt-5">
+                 <MudItem>
+                    @if (string.IsNullOrEmpty(Context.PdfUrl))
+                    {
+                        <img class="img-thumbnail" src="upload/empty.jpg" style="min-height:100px;height:100px;" />
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Custom.FileFormats.FilePdf" />
+                        <MudText>@Context.PdfUrl</MudText> 
+                    }
+                </MudItem>
+                <MudItem>
+                    <InputFile id="pdfUrlInput" OnChange="OnInputPdfUrlChange" hidden />
+                    <MudFab HtmlTag="label"
+                            Color="Color.Secondary"
+                            Icon="@Icons.Filled.Image"
+                            Label="Загрузить"
+                            for="pdfUrlInput" />
+                </MudItem>
+            </MudGrid>
         </EditForm>
     </DialogContent>
     <DialogActions>
@@ -166,6 +187,47 @@
 
                 var newUploadResult = await JsonSerializer.DeserializeAsync<UploadFileViewModel>(responseStream, options);
                 Context.Diploma = newUploadResult.Url;
+            }
+
+        }
+    }
+
+    async Task OnInputPdfUrlChange(InputFileChangeEventArgs e)
+    {
+        long maxFileSize = 1024 * 1024 * 15;
+        var upload = false;
+
+        using var content = new MultipartFormDataContent();
+
+        var fileContent =
+                new StreamContent(e.File.OpenReadStream(maxFileSize));
+
+        fileContent.Headers.ContentType =
+            new System.Net.Http.Headers.MediaTypeHeaderValue(e.File.ContentType);
+
+
+        content.Add(
+            content: fileContent,
+            name: "\"files\"",
+            fileName: e.File.Name);
+
+        upload = true;
+
+        if (upload)
+        {
+            var response = await httpClient.PostAsync("/api/file/pdf", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                using var responseStream = await response.Content.ReadAsStreamAsync();
+
+                var newUploadResult = await JsonSerializer.DeserializeAsync<UploadFileViewModel>(responseStream, options);
+                Context.PdfUrl = newUploadResult.Url;
             }
 
         }

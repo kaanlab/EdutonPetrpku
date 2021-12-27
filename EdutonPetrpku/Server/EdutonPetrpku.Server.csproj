@@ -16,6 +16,7 @@
   <ItemGroup>
     <Folder Include="upload\ckeditor\" />
     <Folder Include="upload\diplomas\" />
+    <Folder Include="upload\pdf\" />
   </ItemGroup>
 
   <ItemGroup>

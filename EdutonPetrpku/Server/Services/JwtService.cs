@@ -29,7 +29,8 @@ namespace EdutonPetrpku.Server.Services
                 new Claim(ClaimTypes.Name, appUser.UserName),
                 new Claim(ClaimTypes.GivenName, appUser.DisplayName),
                 new Claim(ClaimTypes.Webpage, appUser.Image ?? @"\upload\empty.jpg"),
-                new Claim(ClaimTypes.UserData, appUser.Diploma ?? @"\upload\diploma.jpg")
+                new Claim(ClaimTypes.UserData, appUser.Diploma ?? @"\upload\diploma.jpg"),
+                new Claim(ClaimTypes.Uri, appUser.PdfUrl ?? @"\upload\empty.jpg")
             };
 
             foreach (var role in roles)

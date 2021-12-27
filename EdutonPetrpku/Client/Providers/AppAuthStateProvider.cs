@@ -34,7 +34,15 @@ namespace EdutonPetrpku.Client.Providers
 
             var claims = ParseClaimsFromJwt(savedToken);
 
-            if(TokenIsExpired(claims.First(c => c.Type == ClaimTypes.Expired)))
+            if(claims.Count() <= 0)
+            {
+                await _localStorage.RemoveItemAsync("authToken");
+                MarkUserAsLoggedOut();
+                _httpClient.DefaultRequestHeaders.Authorization = null;
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            }
+
+            if (TokenIsExpired(claims.First(c => c.Type == ClaimTypes.Expired)))
             {
                 await _localStorage.RemoveItemAsync("authToken");
                 MarkUserAsLoggedOut();
@@ -66,13 +74,37 @@ namespace EdutonPetrpku.Client.Providers
         {
             var token = new JwtSecurityToken(jwtEncodedString: jwtToken);
 
-            yield return new Claim(ClaimTypes.Sid, token.Claims.First(c => c.Type.Contains("sid"))?.Value);
-            yield return new Claim(ClaimTypes.Name, token.Claims.First(c => c.Type.Equals("unique_name"))?.Value);
-            yield return new Claim(ClaimTypes.GivenName, token.Claims.First(c => c.Type.Equals("given_name"))?.Value);
-            yield return new Claim(ClaimTypes.Webpage, token.Claims.First(c => c.Type.Equals("website"))?.Value);
-            yield return new Claim(ClaimTypes.Role, token.Claims.First(c => c.Type.Equals("role"))?.Value);
-            yield return new Claim(ClaimTypes.UserData, token.Claims.First(c => c.Type.Contains("userdata"))?.Value);
-            yield return new Claim(ClaimTypes.Expired, token.Claims.First(c => c.Type.Equals("exp"))?.Value);
+            var sid = token.Claims.FirstOrDefault(c => c.Type.Contains("sid"))?.Value;
+            if (!string.IsNullOrEmpty(sid))
+                yield return new Claim(ClaimTypes.Sid, sid);
+
+            var uniqueName = token.Claims.FirstOrDefault(c => c.Type.Equals("unique_name"))?.Value;
+            if (!string.IsNullOrEmpty(uniqueName))
+                yield return new Claim(ClaimTypes.Name, uniqueName);
+
+            var givenName = token.Claims.FirstOrDefault(c => c.Type.Equals("given_name"))?.Value;
+            if (!string.IsNullOrEmpty(givenName))
+                yield return new Claim(ClaimTypes.GivenName, givenName);
+
+            var avatar = token.Claims.FirstOrDefault(c => c.Type.Equals("website"))?.Value;
+            if (!string.IsNullOrEmpty(avatar))
+                yield return new Claim(ClaimTypes.Webpage, avatar);
+
+            var role = token.Claims.FirstOrDefault(c => c.Type.Equals("role"))?.Value;
+            if (!string.IsNullOrEmpty(role))
+                yield return new Claim(ClaimTypes.Role, role);
+
+            var diploma = token.Claims.FirstOrDefault(c => c.Type.Contains("userdata"))?.Value;
+            if (!string.IsNullOrEmpty(diploma))
+                yield return new Claim(ClaimTypes.UserData, diploma);
+
+            var pdfUrl = token.Claims.FirstOrDefault(c => c.Type.Contains("uri"))?.Value;
+            if (!string.IsNullOrEmpty(pdfUrl))
+                yield return new Claim(ClaimTypes.Uri, pdfUrl);
+
+            var exp = token.Claims.FirstOrDefault(c => c.Type.Equals("exp"))?.Value;
+            if (!string.IsNullOrEmpty(exp))
+                yield return new Claim(ClaimTypes.Expired, exp);
         }
 
         private bool TokenIsExpired(Claim exp)
