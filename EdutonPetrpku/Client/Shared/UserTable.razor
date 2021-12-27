@@ -76,7 +76,15 @@ else
 
     private async Task UpdateUser(AppUserViewModel context)
     {
-        var appUserModel = new AppUserUpdateViewModel { DisplayName = context.DisplayName, Email = context.Email, Image = context.Image, UserName = context.UserName };
+        var appUserModel = new AppUserUpdateViewModel 
+        {
+            DisplayName = context.DisplayName, 
+            Email = context.Email, 
+            Image = context.Image, 
+            UserName = context.UserName, 
+            Diploma = context.Diploma, 
+            PdfUrl = context.PdfUrl 
+        };
         var parameters = new DialogParameters { ["context"] = appUserModel };
 
         var dialog = DialogService.Show<UserUpdateDialog>("Обновить данные пользователя", parameters);

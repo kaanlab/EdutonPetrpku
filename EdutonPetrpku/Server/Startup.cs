@@ -50,7 +50,7 @@ namespace EdutonPetrpku.Server
             services.AddIdentity<AppUser, IdentityRole>(o => o.Password.RequireNonAlphanumeric = false)
                 .AddEntityFrameworkStores<AppDbContext>();
 
-            services.AddTransient<IJwtService, JwtService>();
+            services.AddScoped<IJwtService, JwtService>();
             services.AddAuthentication(o =>
             {
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
