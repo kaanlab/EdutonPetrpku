@@ -21,7 +21,7 @@
     }
     else
     {
-        <MudText Typo="Typo.h5" Class="my-4">Ваша тема курса для эдутона</MudText>
+        <MudText Typo="Typo.h5" Class="my-4">Ваша тема курса для эдутона:</MudText>
         <EditForm Model="@model" OnInvalidSubmit="OnValidSubmit">
             <MudCard>
                 <MudCardContent>
@@ -55,7 +55,7 @@
 @if (!string.IsNullOrEmpty(authUserDiploma))
 {
     <div class="row">
-        <MudText Typo="Typo.h5" Class="my-4">Cертификат участника:</MudText>
+        <MudText Typo="Typo.h5" Class="my-4">Благодарственное письмо:</MudText>
     </div>
     <div class="row my-4">
         <img src="@authUserDiploma" class="rounded mx-auto d-block" style="min-width:500px;width:500px;">
